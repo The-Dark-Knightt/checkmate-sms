@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+<title>CheckMate · My Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0f1f45;--blue:#1a3fa0;--blue-mid:#2e56c8;--blue-bg:#edf1fb;
+  --red:#c0192c;--red-mid:#e02035;--red-bg:#fdf0f2;
+  --pink:#ff6b7a;--green:#1a6e4a;--green-bg:#e8f5ef;
+  --amber:#b45309;--amber-bg:#fef3e2;--orange:#e65100;--orange-bg:#fff3e0;
+  --violet:#6d28d9;--violet-bg:#f2ebfe;
+  --text:#0f1f45;--muted:#6b7a99;--border:#dce3f0;--surface:#fff;--bg:#f4f6fb;
+  --shadow:0 1px 3px rgba(26,63,160,.07),0 4px 14px rgba(26,63,160,.05);
+  --shadow-lg:0 8px 32px rgba(26,63,160,.1);
+  --r:13px;--rs:9px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;min-height:100vh}
+nav{background:var(--blue);position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.ni{max-width:900px;margin:0 auto;padding:0 20px;height:58px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-family:'DM Serif Display',serif;font-size:24px;letter-spacing:-.4px;text-decoration:none;flex-shrink:0}
+.logo .c{color:#fff}.logo .m{color:var(--pink)}
+.nav-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.bal-chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 13px;font-size:12px;color:#fff;cursor:default}
+.bal-chip svg{width:13px;height:13px;stroke:var(--pink);fill:none}
+.bal-chip .bal-num{font-family:'DM Serif Display',serif;font-size:15px}
+.user-btn{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:4px 12px 4px 4px;cursor:pointer;font-size:13px;font-weight:500;color:#fff;font-family:'DM Sans',sans-serif;position:relative;transition:background .15s}
+.user-btn:hover{background:rgba(255,255,255,.18)}
+.av{width:28px;height:28px;border-radius:50%;background:var(--pink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.dropdown{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-lg);min-width:160px;padding:5px;display:none;z-index:300}
+.dropdown.open{display:block}
+.ddi{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:7px;font-size:13px;color:var(--text);cursor:pointer;transition:background .12s}
+.ddi:hover{background:var(--bg)}
+.ddi svg{width:13px;height:13px;stroke:var(--muted);flex-shrink:0}
+.ddi.danger{color:var(--red)}.ddi.danger svg{stroke:var(--red)}
+.dd-sep{height:1px;background:var(--border);margin:4px 0}
+main{max-width:900px;margin:0 auto;padding:32px 20px 80px}
+@media(max-width:600px){main{padding:20px 14px 80px}}
+#statusBanner{display:none;align-items:center;gap:10px;padding:9px 20px;font-size:13px;font-weight:500;flex-wrap:wrap}
+#statusBanner.online{background:#dcfce7;color:#15803d;border-bottom:1px solid #bbf7d0}
+#statusBanner.offline{background:#fef2f2;color:#b91c1c;border-bottom:1px solid #fecaca}
+#statusBanner.show{display:flex}
+.sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.online .sb-dot{background:#22c55e}
+.offline .sb-dot{background:#ef4444}
+@media(max-width:600px){#statusBanner{font-size:12px;padding:8px 14px}}
+.sec-hdr{margin-bottom:20px}
+.sec-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:5px}
+.sec-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text);margin-bottom:3px}
+.sec-sub{font-size:13px;color:var(--muted)}
+
+/* Welcome banner */
+.welcome-banner{background:var(--navy);border-radius:16px;padding:24px 28px;margin-bottom:28px;position:relative;overflow:hidden;animation:up .4s ease both}
+.welcome-banner::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(255,107,122,.08);top:-100px;right:-80px;pointer-events:none}
+.wb-eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.4);margin-bottom:6px}
+.wb-title{font-family:'DM Serif Display',serif;font-size:24px;color:#fff;margin-bottom:6px}
+.wb-sub{font-size:13px;color:rgba(255,255,255,.5)}
+
+/* Steps */
+.steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+@media(max-width:600px){.steps-row{grid-template-columns:1fr}}
+.step-card{background:var(--surface);border-radius:12px;padding:16px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;animation:up .4s ease both}
+.step-num{width:28px;height:28px;border-radius:8px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:15px;color:var(--blue);flex-shrink:0}
+.step-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.step-desc{font-size:12px;color:var(--muted)}
+
+/* Upload area */
+.upload-card{background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--shadow);margin-bottom:28px;animation:up .4s .05s ease both}
+.no-slots-notice{display:none;background:var(--amber-bg);border:1px solid #f6d28c;border-radius:8px;padding:10px 14px;font-size:13px;color:var(--amber);font-weight:500;margin-bottom:14px;align-items:center;gap:8px}
+.no-slots-notice.show{display:flex}
+.no-slots-notice svg{width:14px;height:14px;stroke:currentColor;flex-shrink:0}
+.doc-notice{background:var(--blue-bg);border:1px solid #b8d4fb;border-radius:8px;padding:9px 13px;font-size:12px;color:var(--navy);font-weight:500;margin-bottom:14px;display:flex;align-items:flex-start;gap:7px;line-height:1.45}
+.doc-notice svg{width:14px;height:14px;stroke:var(--blue);flex-shrink:0;margin-top:1px}
+.dropzone{border:2px dashed var(--border);border-radius:var(--r);padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s,transform .15s}
+.dropzone:hover,.dropzone.drag{border-color:var(--blue);background:var(--blue-bg);transform:translateY(-1px)}
+.dropzone.has-file{border-style:solid;border-color:var(--blue);background:var(--blue-bg)}
+.dz-icon{width:50px;height:50px;background:var(--blue-bg);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;transition:transform .2s}
+.dropzone:hover .dz-icon,.dropzone.has-file .dz-icon{transform:scale(1.06);background:rgba(26,63,160,.15)}
+.dz-icon svg{width:22px;height:22px;stroke:var(--blue)}
+.dz-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);margin-bottom:4px}
+.dz-sub{font-size:13px;color:var(--muted)}.dz-sub span{color:var(--blue);text-decoration:underline;text-underline-offset:2px;font-weight:500}
+.dz-badge{display:inline-block;background:var(--blue-bg);border:1px solid var(--border);border-radius:5px;padding:3px 9px;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--muted);margin-top:10px}
+.fp{display:none;align-items:center;gap:11px;background:var(--blue-bg);border-radius:10px;padding:11px 14px;margin-top:14px}
+.fp.show{display:flex}
+.fp-ico{width:34px;height:34px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fp-ico svg{width:13px;height:13px;stroke:#fff}
+.fp-name{font-size:13px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.fp-size{font-size:12px;color:var(--muted);white-space:nowrap}
+.fp-rm{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;display:flex;align-items:center;transition:color .15s;flex-shrink:0}
+.fp-rm:hover{color:var(--red)}
+.fp-rm svg{width:14px;height:14px;stroke:currentColor}
+.sub-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;flex-wrap:wrap}
+.sub-hint{font-size:12px;color:var(--muted);font-style:italic;flex:1}
+.btn-sub{background:var(--red);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s,transform .1s;white-space:nowrap}
+.btn-sub:disabled{opacity:.5;cursor:not-allowed}
+.btn-sub:not(:disabled):hover{background:var(--red-mid);transform:translateY(-1px)}
+.btn-sub svg{width:15px;height:15px;stroke:#fff;flex-shrink:0}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
+.btn-sub.loading .spin{display:inline-block}.btn-sub.loading .bt{display:none}
+#fileInput{display:none}
+
+/* History */
+.history-card{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);animation:up .4s .1s ease both}
+.hc-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}
+.hc-title-row{display:flex;flex-direction:column;gap:2px}
+.live-indicator{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green);font-weight:600}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.8s ease-in-out infinite}
+.sub-count{font-size:12px;color:var(--muted);background:var(--blue-bg);border-radius:999px;padding:3px 10px;font-weight:500}
+.sub-list{padding:8px 16px 16px}
+.sub-item{border:1px solid var(--border);border-radius:11px;padding:14px 16px;margin-bottom:10px;transition:border-color .15s,box-shadow .15s}
+.sub-item:last-child{margin-bottom:0}
+.sub-item:hover{border-color:#b8c4de;box-shadow:0 2px 8px rgba(26,63,160,.06)}
+.si-top{display:flex;align-items:flex-start;gap:11px;margin-bottom:10px}
+.si-icon{width:38px;height:38px;background:var(--blue-bg);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.si-icon svg{width:15px;height:15px;stroke:var(--blue)}
+.si-info{flex:1;min-width:0}
+.si-name{font-weight:600;font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.si-date{font-size:12px;color:var(--muted);margin-top:1px}
+.status-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap}
+.spd{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.sp-pending{background:var(--blue-bg);color:var(--muted)}.sp-pending .spd{background:var(--muted)}
+.sp-queued{background:var(--amber-bg);color:var(--amber)}.sp-queued .spd{background:var(--amber);animation:pulse 1.4s ease-in-out infinite}
+.sp-processing{background:var(--orange-bg);color:var(--orange)}.sp-processing .spd{background:var(--orange);animation:pulse 1s ease-in-out infinite}
+.sp-done{background:var(--green-bg);color:var(--green)}.sp-done .spd{background:var(--green)}
+
+/* Score badges */
+.scores{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.score-badge{display:flex;align-items:center;gap:6px;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600}
+.sb-sim{background:#fff3e0;color:#bf360c}
+.sb-ai{background:#e8eaf6;color:#283593}
+.score-badge .sb-icon{width:14px;height:14px;stroke:currentColor;flex-shrink:0}
+.score-badge .sb-label{color:inherit;opacity:.75;font-weight:400;margin-right:2px}
+.score-badge .sb-val{font-family:'DM Serif Display',serif;font-size:15px}
+
+/* Score pending hint */
+.score-pending{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);margin-top:8px}
+.score-pending svg{width:12px;height:12px;stroke:currentColor}
+
+/* Progress bar */
+.proc-bar{background:var(--border);border-radius:999px;height:4px;margin-top:10px;overflow:hidden;display:none}
+.proc-bar.show{display:block}
+.proc-fill{height:4px;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--blue-mid));animation:progAnim 2.5s ease-in-out infinite}
+
+/* Report buttons */
+.ord-timer{display:none;align-items:center;gap:7px;border-radius:8px;padding:7px 11px;margin-top:9px;font-size:12px;font-weight:600;line-height:1.35}
+.ord-timer.show{display:flex}
+.ts-clock{font-size:13px;letter-spacing:.02em;min-width:34px}.ts-lbl{font-weight:500;opacity:.9}.ts-ico{font-size:13px;flex-shrink:0}
+.ts-start{background:var(--blue-bg);color:var(--blue-mid)}.ts-start .ts-ico{animation:tsFloat 2.4s ease-in-out infinite}
+.ts-mid{background:var(--amber-bg);color:var(--amber)}.ts-mid .ts-ico{animation:tsPulse 1.4s ease-in-out infinite}
+.ts-final{background:var(--orange-bg);color:var(--orange);animation:tsGlowOrange 1.6s ease-in-out infinite}.ts-final .ts-ico{animation:tsPulse .9s ease-in-out infinite}
+.ts-late{background:var(--violet-bg);color:var(--violet);animation:tsGlowViolet 2.8s ease-in-out infinite}.ts-late .ts-ico{animation:tsFloat 2.8s ease-in-out infinite}
+@keyframes tsPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.25);opacity:.75}}
+@keyframes tsFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes tsGlowOrange{0%,100%{box-shadow:0 0 0 rgba(230,81,0,0)}50%{box-shadow:0 0 10px rgba(230,81,0,.28)}}
+@keyframes tsGlowViolet{0%,100%{box-shadow:0 0 0 rgba(109,40,217,0)}50%{box-shadow:0 0 10px rgba(109,40,217,.22)}}
+.ready-note{display:flex;align-items:center;gap:7px;background:var(--green-bg);color:var(--green);border-radius:8px;padding:8px 11px;margin-top:9px;font-size:12px;font-weight:600}
+.ready-note svg{width:14px;height:14px;stroke:var(--green);flex-shrink:0}
+.report-btns{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.rpt-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);transition:all .15s;font-family:'DM Sans',sans-serif;white-space:nowrap;min-width:120px;justify-content:center;position:relative;overflow:hidden}
+.rpt-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);transform:translateY(-1px)}
+.rpt-btn:hover svg{stroke:#fff}
+.rpt-btn svg{width:12px;height:12px;stroke:var(--blue);transition:stroke .15s;flex-shrink:0}
+.rpt-btn.sim:hover{background:#bf360c;border-color:#bf360c}
+.rpt-btn.ai-rpt:hover{background:#283593;border-color:#283593}
+.rpt-btn.downloading{background:var(--blue);color:#fff;border-color:var(--blue);cursor:default;transform:none;pointer-events:none}
+.rpt-btn.downloading svg{display:none}
+.rpt-btn.dl-done{background:var(--green);color:#fff;border-color:var(--green);pointer-events:none}
+.rpt-btn.dl-done svg{display:none}
+.rpt-btn .dl-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.25)}
+.rpt-btn .dl-bar{height:100%;background:#fff;border-radius:0 2px 2px 0;width:0;transition:width .12s linear}
+.empty-state{padding:40px 20px;text-align:center;color:var(--muted)}
+.empty-state svg{width:34px;height:34px;stroke:var(--border);margin:0 auto 10px;display:block}
+.empty-state p{font-size:13px}
+.empty-state small{font-size:12px;color:#b0bac9;margin-top:4px;display:block}
+
+footer{border-top:1px solid var(--border);padding:20px;text-align:center}
+.foot-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.foot-logo{font-family:'DM Serif Display',serif;font-size:16px;text-decoration:none}
+.foot-logo .c{color:var(--text)}.foot-logo .m{color:var(--pink)}
+.foot-copy{font-size:12px;color:#b0bac9}
+.foot-discord{display:flex;align-items:center;gap:6px;font-size:12px;color:#5865F2;text-decoration:none;font-weight:500}
+.foot-discord:hover{text-decoration:underline}
+.foot-discord svg{width:14px;height:14px}
+.token-btn{display:flex;align-items:center;gap:6px;background:var(--pink);border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;transition:background .15s,transform .1s;font-family:'DM Sans',sans-serif;box-shadow:0 2px 8px rgba(255,107,122,.35)}
+.token-btn:hover{background:#e55a68;transform:translateY(-1px)}
+.token-btn svg{width:13px;height:13px;stroke:currentColor}
+/* Token modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:400;display:none;align-items:center;justify-content:center;padding:16px}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:18px;padding:28px;width:100%;max-width:380px;box-shadow:0 20px 50px rgba(0,0,0,.22);animation:up .25s ease both}
+.modal-title{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.modal-field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:5px}
+.modal-field input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);outline:none;background:#f8f9fc;letter-spacing:.08em;text-align:center;font-weight:600;transition:border-color .2s,box-shadow .2s}
+.modal-field input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(26,63,160,.08)}
+/* Offline modal — centered, animated pop-in, its own theme (independent of the token modal above) */
+.offline-overlay{display:none;position:fixed;inset:0;background:rgba(10,20,40,.55);z-index:900;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.offline-overlay.show{display:flex;animation:ovFade .2s ease both}
+@keyframes ovFade{from{opacity:0}to{opacity:1}}
+.offline-modal{background:var(--surface);border-radius:20px;width:100%;max-width:340px;padding:34px 26px 26px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.28);animation:omPop .3s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes omPop{from{opacity:0;transform:scale(.85) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.om-icon{width:60px;height:60px;border-radius:50%;background:var(--red-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.om-icon svg{width:28px;height:28px;stroke:var(--red-mid)}
+.om-title{font-family:'DM Serif Display',serif;font-size:21px;color:var(--text);margin-bottom:10px}
+.om-msg{font-size:13.5px;line-height:1.6;color:var(--muted);margin-bottom:26px}
+.om-btn{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--red-mid),var(--red));color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 8px 20px rgba(192,25,44,.28);transition:transform .15s,box-shadow .15s}
+.om-btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(192,25,44,.35)}
+.om-btn:active{transform:translateY(0) scale(.98)}
+.tok-result{display:none;background:var(--green-bg);border:1px solid rgba(26,110,74,.2);border-radius:9px;padding:12px 14px;margin-top:14px;text-align:center}
+.tok-result.show{display:block}
+.tok-result .tr-val{font-family:'DM Serif Display',serif;font-size:22px;color:var(--green);margin-bottom:2px}
+.tok-result .tr-sub{font-size:12px;color:var(--green);opacity:.8}
+.tok-err{display:none;background:var(--red-bg);border:1px solid #f5b8bf;border-radius:9px;padding:10px 14px;margin-top:12px;font-size:13px;color:var(--red);text-align:center}
+.tok-err.show{display:block}
+/* ── Payment Modal ── */
+.pay-modal{max-width:360px}
+.pay-tabs{display:flex;border:1.5px solid var(--border);border-radius:10px;padding:3px;gap:3px;margin-bottom:20px;background:var(--bg)}
+.pay-tab{flex:1;padding:9px 12px;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);background:none;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.pay-tab.active{background:#fff;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.pay-tab img{width:16px;height:16px;object-fit:contain}
+.pay-panel{display:none}.pay-panel.active{display:block}
+.plan-grid{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.plan-card{border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:space-between;background:#fff}
+.plan-card:hover{border-color:var(--blue-mid);background:var(--blue-bg)}
+.plan-card.selected{border-color:var(--blue);background:var(--blue-bg);box-shadow:0 0 0 3px rgba(26,63,160,.1)}
+.plan-card .pc-left{display:flex;align-items:center;gap:12px}
+.plan-card .pc-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.plan-card .pc-label{font-weight:700;font-size:13px;color:var(--text)}
+.plan-card .pc-desc{font-size:11px;color:var(--muted);margin-top:1px}
+.plan-card .pc-price{font-family:'DM Serif Display',serif;font-size:15px;font-weight:700;color:var(--blue)}
+.plan-card .pc-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;transition:all .18s;display:flex;align-items:center;justify-content:center}
+.plan-card.selected .pc-radio{border-color:var(--blue);background:var(--blue)}
+.plan-card.selected .pc-radio::after{content:'';width:6px;height:6px;background:#fff;border-radius:50%}
+.pay-notice{background:var(--blue-bg);border:1px solid #c4d4f5;border-radius:9px;padding:10px 12px;font-size:12px;color:var(--blue);margin-bottom:16px;display:flex;align-items:flex-start;gap:8px}
+.pay-notice svg{width:14px;height:14px;stroke:var(--blue);flex-shrink:0;margin-top:1px}
+.pay-result{display:none;text-align:center;padding:24px 0 8px}
+.pay-result.show{display:block}
+.pay-result-icon{width:56px;height:56px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center}
+.pay-result.success .pay-result-icon{background:var(--green-bg)}
+.pay-result.error .pay-result-icon{background:var(--red-bg)}
+.pay-result-title{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:4px}
+.pay-result-sub{font-size:13px;color:var(--muted)}
+.pay-processing{display:none;text-align:center;padding:20px 0}
+.pay-processing.show{display:block}
+.pay-proc-spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+.btn-pay{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-pay:hover:not(:disabled){background:var(--blue-mid);transform:translateY(-1px)}
+.btn-pay:disabled{opacity:.5;cursor:not-allowed}
+.btn-pay .spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
+.btn-pay.loading .spin{display:inline-block}.btn-pay.loading .bt{display:none}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.btn-ghost{background:none;border:1.5px solid var(--border);color:var(--muted);border-radius:var(--rs);padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.btn-ghost:hover{background:var(--bg)}
+.btn-prim{background:var(--blue);color:#fff;border:none;border-radius:var(--rs);padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.btn-prim:hover{background:var(--blue-mid)}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:999;white-space:nowrap;max-width:calc(100vw - 32px);text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes up{from{opacity:0;transform:translateY(11px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes progAnim{0%{width:10%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:10%;margin-left:85%}}
+
+/* ── TABLET (≤900px) ── */
+@media(max-width:900px){
+  main{padding:24px 16px 80px}
+  .welcome-banner{padding:20px 22px}
+  .wb-title{font-size:20px}
+  .steps-inline{grid-template-columns:1fr!important}
+}
+@media(max-width:600px){
+  .steps-inline{grid-template-columns:1fr!important;gap:6px!important;margin-top:12px!important}
+}
+
+/* ── MOBILE (≤600px) ── */
+@media(max-width:600px){
+  /* Nav */
+  .ni{padding:0 14px;height:52px;gap:8px}
+  .logo{font-size:20px}
+  .bal-chip{padding:4px 10px}
+  .bal-chip svg{display:none}
+  .bal-chip span:last-child{display:none}
+  .token-btn span{display:inline}
+  .token-btn{padding:6px 11px;font-size:11.5px}
+  .user-btn{padding:3px 8px 3px 3px}
+  .user-btn span#uname{display:none}
+  .user-btn svg{display:none}
+
+  /* Main */
+  main{padding:16px 12px 100px}
+
+  /* Welcome banner */
+  .welcome-banner{padding:18px 16px;border-radius:12px;margin-bottom:18px}
+  .wb-title{font-size:18px}
+  .wb-sub{font-size:12px}
+
+  /* Steps */
+  .steps-row{grid-template-columns:1fr;gap:8px;margin-bottom:18px}
+  .step-card{padding:12px}
+
+  /* Section headers */
+  .sec-title{font-size:22px}
+  .sec-sub{font-size:12px}
+  .sec-hdr{margin-bottom:14px}
+
+  /* Upload card */
+  .upload-card{padding:16px;border-radius:12px;margin-bottom:20px}
+  .dropzone{padding:20px 14px}
+  .dz-icon{width:40px;height:40px}
+  .dz-icon svg{width:18px;height:18px}
+  .dz-title{font-size:16px}
+  .dz-sub{font-size:12px}
+  .sub-row{flex-direction:column;align-items:stretch}
+  .btn-sub{width:100%;justify-content:center;padding:13px}
+  .sub-hint{text-align:center}
+
+  /* File preview */
+  .fp{padding:9px 12px}
+  .fp-name{font-size:12px}
+  .fp-size{font-size:11px}
+
+  /* History */
+  .history-card{border-radius:12px}
+  .hc-head{padding:14px 16px;flex-wrap:wrap;gap:8px}
+  .sub-list{padding:6px 12px 12px}
+  .sub-item{padding:12px 13px}
+  .si-name{font-size:13px}
+  .si-date{font-size:11px}
+  .status-pill{font-size:10px;padding:2px 8px}
+  .scores{gap:6px}
+  .score-badge{padding:5px 10px;font-size:11px}
+  .score-badge .sb-val{font-size:14px}
+  .report-btns{gap:5px}
+  .rpt-btn{padding:6px 10px;font-size:11px}
+
+  /* Token modal */
+  .modal{padding:22px 18px}
+  .modal-title{font-size:19px}
+
+  /* Footer */
+  .foot-inner{justify-content:center;flex-direction:column;align-items:center;gap:8px}
+}
+
+/* ── SMALL MOBILE (≤380px) ── */
+@media(max-width:380px){
+  .logo{font-size:18px}
+  .bal-num{font-size:13px}
+  .dz-title{font-size:15px}
+  .score-badge{padding:4px 8px;font-size:10px}
+}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:150;box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+.mob-nav-inner{display:flex;max-width:500px;margin:0 auto}
+.mni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0;border:none;background:none;font-family:'DM Sans',sans-serif;color:var(--muted);font-size:10px;font-weight:500}
+.mni svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
+.mni.active{color:var(--blue)}
+/* Buy checks button stands out in the nav */
+#mni-token{background:var(--pink);color:#fff;border-radius:12px;padding:6px 10px;margin:4px 6px;flex:1.2;box-shadow:0 2px 10px rgba(255,107,122,.35)}
+#mni-token svg{stroke:#fff}
+#mni-token:hover{background:#e55a68}
+@media(max-width:600px){.mob-nav{display:block}}
+</style>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+<nav>
+  <div class="ni">
+    <a class="logo" href="dashboard.html"><span class="c">Check</span><span class="m">Mate</span></a>
+    <div class="nav-r">
+      <div class="bal-chip" id="balChip">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 16 14"/></svg>
+        <span class="bal-num" id="balNum">—</span>
+        <span style="color:rgba(255,255,255,.55);font-size:11px"> checks</span>
+      </div>
+      <button class="token-btn" onclick="openPayModal()" title="Buy checks to use for Turnitin submissions">
+        <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" fill="none"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span>Buy Checks</span>
+      </button>
+      <div class="user-btn" id="ubtn">
+        <div class="av" id="uav">?</div>
+        <span id="uname" style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</span>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        <div class="dropdown" id="dd">
+          <div class="ddi"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span id="ddEmail" style="font-size:12px;color:var(--muted)">—</span></div>
+          <div class="dd-sep"></div>
+          <div class="ddi" onclick="openProfile()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>My Profile</div>
+          <div class="ddi danger" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign out</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<div id="statusBanner"><div class="sb-dot"></div><span id="sbMsg"></span></div>
+
+<!-- Report preview modal -->
+
+
+<main>
+  <!-- Welcome + Steps merged -->
+  <div class="welcome-banner" style="margin-bottom:16px">
+    <div class="wb-title" id="wbName">Welcome back!</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px" class="steps-inline">
+      <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:12px;display:flex;gap:10px;align-items:flex-start">
+        <div style="width:24px;height:24px;border-radius:6px;background:rgba(255,107,122,.25);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:13px;color:var(--pink);flex-shrink:0">1</div>
+        <div><div style="font-size:12px;font-weight:600;color:#fff">Upload Document</div><div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:1px">PDF, DOCX, RTF, TXT</div></div>
+      </div>
+      <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:12px;display:flex;gap:10px;align-items:flex-start">
+        <div style="width:24px;height:24px;border-radius:6px;background:rgba(255,107,122,.25);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:13px;color:var(--pink);flex-shrink:0">2</div>
+        <div><div style="font-size:12px;font-weight:600;color:#fff">We Process It</div><div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:1px">Takes 5–15 minutes</div></div>
+      </div>
+      <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:12px;display:flex;gap:10px;align-items:flex-start">
+        <div style="width:24px;height:24px;border-radius:6px;background:rgba(255,107,122,.25);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:13px;color:var(--pink);flex-shrink:0">3</div>
+        <div><div style="font-size:12px;font-weight:600;color:#fff">Get Your Report</div><div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:1px">Download both reports</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload -->
+  <div id="upload-sec">
+    <div class="upload-card">
+      <div class="doc-notice">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>Remove all university identifiers (logo, cover page, names, emails) before uploading — Turnitin rejects flagged files, and rejected files still use a slot.</span>
+      </div>
+      <div class="no-slots-notice" id="noSlots">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>You have no checks remaining. <a href="#" onclick="event.preventDefault();openPayModal()" style="color:var(--amber);font-weight:700;text-decoration:underline">Buy checks now</a> to submit a document.</span>
+      </div>
+      <div class="dropzone" id="dz" onclick="handleUploadClick()">
+        <div class="dz-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div class="dz-title">Drop your document here</div>
+        <div class="dz-sub"><span>Browse files</span> or drag &amp; drop · PDF, DOCX, RTF, TXT</div>
+      </div>
+      <div class="fp" id="fp">
+        <div class="fp-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <span class="fp-name" id="fpName"></span>
+        <span class="fp-size" id="fpSize"></span>
+        <button class="fp-rm" onclick="rmFile(event)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="sub-row">
+        <span class="sub-hint" id="subHint">Select a file to continue</span>
+        <button class="btn-sub" id="subBtn" disabled onclick="doSubmit()">
+          <div class="spin"></div>
+          <span class="bt" style="display:flex;align-items:center;gap:7px">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.86 0 3.59.57 5.03 1.53"/><path d="M21 3l-9 9"/><line x1="15" y1="3" x2="21" y2="3"/><line x1="21" y1="3" x2="21" y2="9"/></svg>
+            Submit for Turnitin Check
+          </span>
+        </button>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.rtf,.txt,.html,.htm" onchange="onFileChosen(event)"/>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div id="history-sec">
+    <div class="history-card">
+      <div class="hc-head">
+        <div class="hc-title-row">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)">Submissions</div>
+        </div>
+        <span class="sub-count" id="subCount">0 submissions</span>
+      </div>
+      <div class="sub-list" id="subList">
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <p>No submissions yet.</p>
+          <small>Upload your document above to get started.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-logo" href="dashboard.html"><span class="c">Check</span><span class="m">Mate</span></a>
+    <a class="foot-discord" href="https://discord.gg/XcE6qhw7Hw" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.03.056a19.9 19.9 0 0 0 5.993 3.03.077.077 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" fill="#5865F2"/></svg>
+      Reviews on Discord
+    </a>
+    <div class="foot-copy">© 2025 CheckMate</div>
+  </div>
+</footer>
+
+<div id="toast"></div>
+
+<!-- Mobile bottom nav -->
+<div class="mob-nav">
+  <div class="mob-nav-inner">
+    <button class="mni active" id="mni-upload" onclick="mobileNav('upload-sec',this)">
+      <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Submit
+    </button>
+    <button class="mni" id="mni-history" onclick="mobileNav('history-sec',this)">
+      <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      History
+    </button>
+    <button class="mni" id="mni-token" onclick="openPayModal()">
+      <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Buy Checks
+    </button>
+  </div>
+</div>
+
+<!-- WhatsApp FAB -->
+<a href="https://wa.me/254117247483" target="_blank" rel="noopener" id="waFab" title="WhatsApp Support" style="position:fixed;bottom:80px;right:20px;z-index:500;width:50px;height:50px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.4);text-decoration:none;transition:transform .2s">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.004 2C6.472 2 2 6.472 2 12.004c0 1.771.463 3.484 1.344 4.995L2 22l5.13-1.345A9.954 9.954 0 0 0 12.004 22C17.532 22 22 17.532 22 12.004 22 6.472 17.532 2 12.004 2zm0 18.188a8.178 8.178 0 0 1-4.17-1.144l-.298-.178-3.087.809.824-3.01-.196-.31A8.17 8.17 0 0 1 3.81 12.004c0-4.52 3.677-8.193 8.194-8.193 4.517 0 8.194 3.673 8.194 8.193 0 4.52-3.677 8.184-8.194 8.184z"/></svg>
+</a>
+
+<!-- Profile Modal -->
+<div class="overlay" id="profileOverlay" onclick="if(event.target===this)closeProfile()">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-title">My Profile</div>
+    <div class="modal-sub" id="profileInfo" style="margin-bottom:16px">—</div>
+    <div style="border-top:1px solid var(--border);padding-top:16px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px">Change Password</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Current Password</label>
+        <input type="password" id="pwCurrent" placeholder="Enter current password" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;background:#f8f9fc"/>
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">New Password</label>
+        <input type="password" id="pwNew" placeholder="Min. 8 characters" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;background:#f8f9fc"/>
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Confirm New Password</label>
+        <input type="password" id="pwNew2" placeholder="Re-enter new password" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;background:#f8f9fc"/>
+      </div>
+      <div id="pwMsg" style="font-size:12px;margin-bottom:10px;display:none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeProfile()">Close</button>
+      <button class="btn-prim" onclick="changePassword()">Update Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="overlay" id="payOverlay" onclick="if(event.target===this)closePayModal()">
+  <div class="modal pay-modal">
+
+    <!-- Step 1: Select plan -->
+    <div id="payStep1">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div>
+          <div class="modal-title" style="font-size:16px;margin-bottom:2px">Top Up Checks</div>
+          <div class="modal-sub" id="payModalSub" style="font-size:11px;margin:0">Pay via M-Pesa</div>
+        </div>
+        <button onclick="closePayModal()" style="background:var(--bg);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="plan-grid" id="mpesa-plans">
+        <div class="plan-card selected" data-plan="mpesa_1" onclick="selectPlan(this)">
+          <div class="pc-left">
+            <div class="pc-icon" style="background:#e8f5ef">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1a6e4a" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div>
+              <div class="pc-label">1 Check</div>
+              <div class="pc-desc">Single Turnitin check</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="pc-price">KES 100</div>
+            <div class="pc-radio"></div>
+          </div>
+        </div>
+        <div class="plan-card" data-plan="mpesa_3" onclick="selectPlan(this)">
+          <div class="pc-left">
+            <div class="pc-icon" style="background:#edf1fb">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1a3fa0" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            </div>
+            <div>
+              <div class="pc-label">3 Checks</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="pc-price">KES 300</div>
+            <div class="pc-radio"></div>
+          </div>
+        </div>
+        <div class="plan-card" data-plan="mpesa_5" onclick="selectPlan(this)">
+          <div class="pc-left">
+            <div class="pc-icon" style="background:#fff8ed">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div>
+              <div class="pc-label">5 Checks <span style="font-size:9px;background:#fff3cd;color:#92400e;border-radius:4px;padding:1px 5px;font-weight:600;margin-left:4px">BEST VALUE</span></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="pc-price">KES 500</div>
+            <div class="pc-radio"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- International (USD/card) plans — shown only when region auto-detect finds a non-Kenya visitor -->
+      <div class="plan-grid" id="usd-plans" style="display:none">
+        <div class="plan-card selected" data-plan="usd_1" data-amount="130" onclick="selectPlan(this)">
+          <div class="pc-left">
+            <div class="pc-icon" style="background:#e8f5ef">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1a6e4a" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div>
+              <div class="pc-label">1 Check</div>
+              <div class="pc-desc">Single Turnitin check</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="pc-price">$1.30</div>
+            <div class="pc-radio"></div>
+          </div>
+        </div>
+        <div class="plan-card" data-plan="usd_3" data-amount="390" onclick="selectPlan(this)">
+          <div class="pc-left">
+            <div class="pc-icon" style="background:#edf1fb">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1a3fa0" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            </div>
+            <div>
+              <div class="pc-label">3 Checks</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="pc-price">$3.90</div>
+            <div class="pc-radio"></div>
+          </div>
+        </div>
+        <div class="plan-card" data-plan="usd_5" data-amount="650" onclick="selectPlan(this)">
+          <div class="pc-left">
+            <div class="pc-icon" style="background:#fff8ed">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div>
+              <div class="pc-label">5 Checks <span style="font-size:9px;background:#fff3cd;color:#92400e;border-radius:4px;padding:1px 5px;font-weight:600;margin-left:4px">BEST VALUE</span></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="pc-price">$6.50</div>
+            <div class="pc-radio"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="payPhoneWrap" style="margin:14px 0 4px">
+        <label style="font-size:11.5px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">M-Pesa Phone Number</label>
+        <input id="payPhone" type="tel" inputmode="numeric" placeholder="07XX XXX XXX" maxlength="13"
+          style="width:100%;padding:11px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;background:#f8f9fc;box-sizing:border-box">
+      </div>
+
+      <button class="btn-pay" id="btnPayMpesa" onclick="initPayment()">
+        <div class="spin"></div>
+        <span class="bt">Pay with M-Pesa</span>
+      </button>
+
+      <button class="btn-pay" id="btnPayCard" onclick="payWithCard()" style="display:none">
+        <div class="spin"></div>
+        <span class="bt">Pay with Card</span>
+      </button>
+    </div>
+
+    <!-- Processing: waiting for STK push approval -->
+    <div id="payStep2" style="display:none;text-align:center;padding:8px 0 4px">
+      <div class="pay-proc-spin" style="margin:0 auto 14px"></div>
+      <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--text);margin-bottom:5px">Check your phone</div>
+      <div style="font-size:12px;color:var(--muted)" id="payWaitMsg">Enter your M-Pesa PIN to approve the payment.</div>
+    </div>
+
+    <!-- Step 3a: Success (shown on return) -->
+    <div id="payStep3ok" style="display:none;text-align:center;padding:8px 0 4px">
+      <div style="background:var(--green-bg);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a6e4a" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--green);margin-bottom:3px">Payment Successful!</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px" id="paySuccessMsg">Checks added to your account.</div>
+      <button class="btn-pay" style="background:var(--green)" onclick="closePayModal()">Done</button>
+    </div>
+
+    <!-- Step 3b: Failed -->
+    <div id="payStep3fail" style="display:none;text-align:center;padding:8px 0 4px">
+      <div style="background:var(--red-bg);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c0192c" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--red);margin-bottom:3px">Payment Failed</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px" id="payErrorMsg">The payment was not completed. Please try again.</div>
+      <button class="btn-pay" style="background:var(--red)" onclick="resetPayModal()">Try Again</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── OFFLINE MODAL — shown the moment someone tries to upload while the system is offline ─── -->
+<div class="offline-overlay" id="offlineOverlay" onclick="if(event.target===this)closeOfflineModal()">
+  <div class="offline-modal">
+    <div class="om-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+    <div class="om-title">We're Offline</div>
+    <div class="om-msg" id="offlineModalMsg"></div>
+    <button class="om-btn" onclick="closeOfflineModal()">Got it</button>
+  </div>
+</div>
+
+<script>
+const API='/api/db';
+let CLIENT=null, SUBS=[], selFile=null, pollTimer=null;
+
+/* ─── AUTH: client accounts have is_reseller = false ─── */
+function getClient(){
+  const s=localStorage.getItem('cm_client')||sessionStorage.getItem('cm_client');
+  if(!s) return null;
+  const u=JSON.parse(s);
+  return (!u.is_reseller) ? u : null;
+}
+/* ─── IDLE LOGOUT (15 min) — timestamp-based so it survives tab
+   backgrounding/throttling. We write a last-active timestamp into whichever
+   storage the session actually used, and check elapsed wall-clock time
+   rather than relying purely on a setTimeout that a backgrounded tab can
+   delay. Checked BEFORE any data is fetched/rendered, so a session that has
+   timed out never gets a chance to flash old data before booting to login. ─── */
+const IDLE_MS_CLIENT=15*60*1000, IDLE_KEY_CLIENT='cm_client_last_active';
+function clientIdleStorage(){return sessionStorage.getItem('cm_client')?sessionStorage:localStorage;}
+function isClientIdleExpired(){
+  try{
+    const last=Number(clientIdleStorage().getItem(IDLE_KEY_CLIENT));
+    if(!last) return false; // fresh login, no record yet
+    return (Date.now()-last)>IDLE_MS_CLIENT;
+  }catch(e){return false;}
+}
+function touchClientActivity(){try{clientIdleStorage().setItem(IDLE_KEY_CLIENT,String(Date.now()));}catch(e){}}
+
+CLIENT=getClient();
+if(!CLIENT){
+  window.location.href='login.html';
+}else if(isClientIdleExpired()){
+  sessionStorage.removeItem('cm_client');localStorage.removeItem('cm_client');
+  sessionStorage.removeItem(IDLE_KEY_CLIENT);localStorage.removeItem(IDLE_KEY_CLIENT);
+  window.location.href='login.html';
+}else{
+  touchClientActivity();
+}
+history.replaceState(null,'','/account');
+
+/* ─── API HELPERS ─── */
+function authHeaders(table){
+  /* The clients table and this client's own submissions are access-controlled — send our session token */
+  return (['clients','submissions'].includes(table) && CLIENT && CLIENT.token) ? {'x-user-token':CLIENT.token} : {};
+}
+async function dbGet(table,filters={}){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('table',table);u.searchParams.set('action','select');
+  u.searchParams.set('filters',JSON.stringify(filters));
+  const r=await fetch(u,{headers:authHeaders(table)});if(!r.ok)throw new Error(await r.text());return r.json();
+}
+async function dbInsert(table,data){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('table',table);u.searchParams.set('action','insert');
+  const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders(table)},body:JSON.stringify(data)});
+  if(!r.ok)throw new Error(await r.text());return r.json();
+}
+async function dbPatch(table,key,val,data){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('table',table);u.searchParams.set('action','update');
+  u.searchParams.set('key',key);u.searchParams.set('val',val);
+  await fetch(u,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders(table)},body:JSON.stringify(data)});
+}
+async function submitFile(file){
+  // 1. Get a ticket — server verifies account/balance and reserves the path
+  const reqRes = await fetch(`${API}?action=request-submission`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-user-token':CLIENT.token||''},
+    body:JSON.stringify({accountType:'client',fileName:file.name})
+  });
+  const reqData = await reqRes.json();
+  if(!reqRes.ok) throw new Error(reqData.error||'Could not start upload');
+
+  // 2. POST bytes to our own server — Supabase URL/key never reach the browser
+  const putRes = await fetch(`${API}?action=proxy-upload`,{
+    method:'POST',
+    headers:{'x-upload-ticket':reqData.ticket,'Content-Type':file.type||'application/octet-stream'},
+    body:file
+  });
+  if(!putRes.ok){const e=await putRes.json().catch(()=>({}));throw new Error(e.error||'Upload failed. Please try again.');}
+
+  // 3. Confirm — decrements balance and creates the DB row
+  const confRes = await fetch(`${API}?action=confirm-submission`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ticket:reqData.ticket})
+  });
+  const confData = await confRes.json();
+  if(!confRes.ok) throw new Error(confData.error||'Could not complete submission');
+  return confData;
+}
+/* ─── REPORT ACCESS — stream-report keeps Supabase URLs server-side only ─── */
+function streamReportUrl(ref,fname,subId){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('action','stream-report');
+  u.searchParams.set('ref',ref);
+  u.searchParams.set('name',fname);
+  if(subId)u.searchParams.set('subId',subId);
+  return u.toString();
+}
+
+/* ─── DOWNLOAD WITH PROGRESS ANIMATION ───────────────────────────────────
+   The button animates a progress bar from 0→85% while the request is in
+   flight (we don't have real byte progress on a fetch, so we simulate a
+   realistic-feeling fill), then jumps to 100% and shows ✓ Done once the
+   browser hands off the file. Resets after 3 s so it can be clicked again.
+─────────────────────────────────────────────────────────────────────────── */
+function startDownload(btn,ref,fname,subId){
+  if(btn.classList.contains('downloading')||btn.classList.contains('dl-done'))return;
+  const url=streamReportUrl(ref,fname,subId);
+  const bar=btn.querySelector('.dl-bar');
+  const origHTML=btn.innerHTML;
+
+  btn.classList.add('downloading');
+  btn.innerHTML=`<span style="font-size:11px;letter-spacing:.02em">Downloading…</span><span class="dl-bar-wrap"><span class="dl-bar"></span></span>`;
+  const b=btn.querySelector('.dl-bar');
+
+  // Simulate progress: fast to 30%, slow crawl to 85%, waits for real response
+  let pct=0;
+  const phases=[
+    {target:30,step:3,interval:40},
+    {target:60,step:1,interval:80},
+    {target:85,step:.4,interval:120},
+  ];
+  let phaseIdx=0,timer=null;
+  function tick(){
+    const ph=phases[phaseIdx];
+    if(!ph)return;
+    pct=Math.min(pct+ph.step,ph.target);
+    if(b)b.style.width=pct+'%';
+    if(pct>=ph.target){
+      phaseIdx++;
+      if(phaseIdx<phases.length){clearInterval(timer);timer=setInterval(tick,phases[phaseIdx].interval);}
+      else clearInterval(timer);
+    }
+  }
+  timer=setInterval(tick,phases[0].interval);
+
+  // Trigger actual download
+  const a=document.createElement('a');
+  a.href=url;a.download=fname;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>a.remove(),1000);
+
+  // After a realistic delay snap to 100% and show done state
+  setTimeout(()=>{
+    clearInterval(timer);
+    if(b)b.style.width='100%';
+    setTimeout(()=>{
+      btn.classList.remove('downloading');
+      btn.classList.add('dl-done');
+      btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg><span style="font-size:11px">Downloaded</span>`;
+      setTimeout(()=>{
+        btn.classList.remove('dl-done');
+        btn.innerHTML=origHTML;
+      },3000);
+    },300);
+  },3500);
+}
+
+/* ─── INIT ─── */
+document.addEventListener('DOMContentLoaded',async()=>{
+  /* Render nav immediately from session so header shows */
+  renderNav();
+  /* Fetch fresh balance from DB FIRST before rendering balance */
+  await refreshClient();
+  /* Then load submissions */
+  await loadSubs();
+  pollTimer=setInterval(poll,8000);
+  loadPageStatus();
+});
+
+/* Retries a transient failure a couple times before giving up, so a brief
+   network/DB hiccup doesn't leave stale or missing data on screen. */
+async function dbGetRetry(table,filters={},tries=3){
+  let lastErr;
+  for(let i=0;i<tries;i++){
+    try{ return await dbGet(table,filters); }
+    catch(e){ lastErr=e; if(i<tries-1) await new Promise(r=>setTimeout(r,400*(i+1))); }
+  }
+  throw lastErr;
+}
+
+async function refreshClient(){
+  /* Fetch fresh balance from DB — always use latest data */
+  try{
+    const rows=await dbGetRetry('clients',{id:CLIENT.id});
+    if(rows&&rows[0]){
+      const f=rows[0];
+      CLIENT.name=f.name||CLIENT.name;
+      CLIENT.email=f.email||CLIENT.email;
+      CLIENT.checks_balance=Number(f.checks_balance)||0;
+      /* Persist fresh data — write back to whichever storage this session
+         actually started in (session vs local), so a "don't remember me"
+         login doesn't get silently upgraded to a permanent one every time
+         this runs (it used to always write to localStorage regardless). */
+      const s=sessionStorage.getItem('cm_client')?'sessionStorage':'localStorage';
+      window[s].setItem('cm_client',JSON.stringify(CLIENT));
+    }
+  }catch(e){
+    /* All retries failed — keep cached values, but say so instead of
+       silently pretending the numbers on screen are current. */
+    toast('Could not refresh balance — showing last known value.');
+  }
+  /* Always render after refresh attempt */
+  renderNav();
+  renderBalance();
+}
+
+function renderNav(){
+  const raw=CLIENT.name||CLIENT.email||'';
+  const n=raw.includes('@')?raw.split('@')[0]:raw;
+  const first=n.split(' ')[0]||'User';
+  const initials=n.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase()||first[0].toUpperCase();
+  document.getElementById('uname').textContent=first;
+  document.getElementById('uav').textContent=initials;
+  document.getElementById('ddEmail').textContent=CLIENT.email||'';
+  document.getElementById('wbName').textContent='Welcome back, '+first+'!';
+}
+
+function renderBalance(){
+  const bal=CLIENT.checks_balance||0;
+  document.getElementById('balNum').textContent=bal;
+  if(bal<=0){
+    document.getElementById('noSlots').classList.add('show');
+    document.getElementById('dz').style.pointerEvents='none';
+    document.getElementById('dz').style.opacity='.5';
+    document.getElementById('subBtn').disabled=true;
+  }else{
+    document.getElementById('noSlots').classList.remove('show');
+    document.getElementById('dz').style.pointerEvents='';
+    document.getElementById('dz').style.opacity='';
+  }
+}
+
+/* ─── OPTIMISTIC CARD STORAGE — persists in-flight uploads across refreshes ─── */
+const OPT_KEY='cm_pending_uploads_client';
+function saveOptimistic(card){try{const a=JSON.parse(sessionStorage.getItem(OPT_KEY)||'{}');a[card.id]=card;sessionStorage.setItem(OPT_KEY,JSON.stringify(a));}catch(e){}}
+function clearOptimistic(id){try{const a=JSON.parse(sessionStorage.getItem(OPT_KEY)||'{}');delete a[id];sessionStorage.setItem(OPT_KEY,JSON.stringify(a));}catch(e){}}
+function getPendingOptimistics(){try{return Object.values(JSON.parse(sessionStorage.getItem(OPT_KEY)||'{}')||{});}catch(e){return[];}}
+
+/* ─── SUBMISSIONS ─── */
+async function loadSubs(){
+  try{
+    const data=await dbGetRetry('submissions',{client_id:CLIENT.id});
+    const real=(data||[]).sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
+    const realIds=new Set(real.map(s=>String(s.id)));
+    const pending=getPendingOptimistics().filter(p=>{
+      const tooOld=Date.now()-new Date(p.submitted_at).getTime()>12*60*1000;
+      if(realIds.has(p.id)||tooOld){clearOptimistic(p.id);return false;}
+      return true;
+    });
+    SUBS=[...pending,...real];
+    renderSubs();
+  }catch(e){
+    /* Retries exhausted. Don't blank out real history with a false "no
+       submissions yet" — that's indistinguishable from actually having
+       none. Show an explicit retry state on first load, or just warn on
+       later loads where we already had a good list showing. */
+    if(!SUBS.length){
+      document.getElementById('subList').innerHTML=`<div class="empty-state"><p>Couldn't load your submissions.</p><small><a href="#" onclick="loadSubs();return false;">Tap to retry</a></small></div>`;
+    }else{
+      toast('Could not refresh submissions — showing last loaded list.');
+    }
+  }
+}
+
+async function poll(){
+  try{
+    await refreshClient();
+    const data=await dbGetRetry('submissions',{client_id:CLIENT.id});
+    const newS=(data||[]).sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
+    for(const ns of newS){
+      const old=SUBS.find(s=>s.id===ns.id);
+      if(old&&old.status!=='done'&&ns.status==='done') toast('✅ Reports done! Click the buttons below to download.');
+    }
+    const realIds=new Set(newS.map(s=>String(s.id)));
+    getPendingOptimistics().forEach(p=>{if(realIds.has(p.id))clearOptimistic(p.id);});
+    SUBS=newS;renderSubs();
+  }catch(e){/* transient poll failure — keep showing the last good list */}
+  pollStatus();
+}
+
+function renderSubs(){
+  const el=document.getElementById('subList');
+  const cnt=document.getElementById('subCount');
+  cnt.textContent=SUBS.length===1?'1 submission':`${SUBS.length} submissions`;
+  if(!SUBS.length){
+    el.innerHTML=`<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No submissions yet.</p><small>Upload a document above to get started.</small></div>`;
+    return;
+  }
+  el.innerHTML=SUBS.map(s=>{
+    const pill=statusPill(s.status);
+    const showBar=s.status==='processing'||s.status==='queued';
+    const scores=[];
+    if(s.similarity_pct!==null&&s.similarity_pct!==undefined)
+      scores.push(`<div class="score-badge sb-sim"><svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="sb-label">Similarity</span><span class="sb-val">${s.similarity_pct}%</span></div>`);
+    if(s.ai_pct!==null&&s.ai_pct!==undefined)
+      scores.push(`<div class="score-badge sb-ai"><svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><span class="sb-label">AI Detection</span><span class="sb-val">${s.ai_pct}%</span></div>`);
+    const rpts=[];
+    if(s.report1_url){const ref=urlToRef(s.report1_url);const enc=btoa(encodeURIComponent(ref));rpts.push(`<button class="rpt-btn sim" id="dlbtn-sim-${s.id}" onclick="startDownload(this,decodeURIComponent(atob('${enc}')),'Similarity_Report.pdf',${s.id})"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Similarity Report<span class="dl-bar-wrap"><span class="dl-bar"></span></span></button>`);}
+    if(s.report2_url){const ref=urlToRef(s.report2_url);const enc=btoa(encodeURIComponent(ref));rpts.push(`<button class="rpt-btn ai-rpt" id="dlbtn-ai-${s.id}" onclick="startDownload(this,decodeURIComponent(atob('${enc}')),'AI_Report.pdf',${s.id})"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>AI Report<span class="dl-bar-wrap"><span class="dl-bar"></span></span></button>`);}    const scorePending=(s.status!=='done'&&!scores.length)?`<div class="score-pending"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Scores will appear here when ready</div>`:'';
+    const doneReady=s.status==='done'&&rpts.length
+      ?`<div class="ready-note"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Click the buttons below to download.</div>`
+      :'';
+    const timerSlot=s.status==='done'?'':`<div class="ord-timer" id="tmr-${s.id}" data-submitted="${s.submitted_at}" data-id="${s.id}"></div>`;
+    return `<div class="sub-item">
+      <div class="si-top">
+        <div class="si-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="si-info">
+          <div style="font-size:10px;font-family:monospace;font-weight:700;color:var(--blue);background:var(--blue-bg);padding:1px 6px;border-radius:4px;display:inline-block;margin-bottom:3px">${refCode(s.id)}</div>
+          <div class="si-name">${x(s.file_name)}</div>
+          <div class="si-date">${fd(s.submitted_at)}</div>
+        </div>
+        ${pill}
+      </div>
+      ${scores.length?`<div class="scores">${scores.join('')}</div>`:''}
+      ${scorePending}
+      <div class="proc-bar ${showBar?'show':''}"><div class="proc-fill"></div></div>
+      ${timerSlot}${doneReady}
+      ${rpts.length?`<div class="report-btns">${rpts.join('')}</div>`:''}
+    </div>`;
+  }).join('');
+  tickOrderTimers();
+}
+
+function statusPill(st){
+  if(st==='done')return`<div class="status-pill sp-done"><span class="spd"></span>Reports Ready</div>`;
+  if(st==='processing')return`<div class="status-pill sp-processing"><span class="spd"></span>Processing…</div>`;
+  if(st==='queued')return`<div class="status-pill sp-queued"><span class="spd"></span>In Queue</div>`;
+  return`<div class="status-pill sp-pending"><span class="spd"></span>Submitted</div>`;
+}
+
+/* ─── FILE UPLOAD ─── */
+function onFileChosen(e){const f=e.target.files[0];if(f)setFile(f);}
+function handleUploadClick(){
+  if(_lastStatus===false){showOfflineModal();return;}
+  document.getElementById('fileInput').click();
+}
+function setFile(f){
+  const ext=f.name.toLowerCase().substring(f.name.lastIndexOf('.'));
+  if(!['.pdf','.doc','.docx','.rtf','.txt','.html','.htm'].includes(ext)){toast('Unsupported file type');return;}
+  selFile=f;
+  document.getElementById('fpName').textContent=f.name;
+  document.getElementById('fpSize').textContent=fmtSz(f.size);
+  document.getElementById('fp').classList.add('show');
+  document.getElementById('dz').classList.add('has-file');
+  if((CLIENT.checks_balance||0)>0){document.getElementById('subBtn').disabled=false;}
+  document.getElementById('subHint').style.opacity='0';
+}
+function rmFile(e){
+  e.stopPropagation();selFile=null;
+  document.getElementById('fp').classList.remove('show');
+  document.getElementById('dz').classList.remove('has-file');
+  document.getElementById('subBtn').disabled=true;
+  document.getElementById('fileInput').value='';
+  document.getElementById('subHint').style.opacity='1';
+}
+const dz=document.getElementById('dz');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{
+  e.preventDefault();dz.classList.remove('drag');
+  if(_lastStatus===false){showOfflineModal();return;}
+  const f=e.dataTransfer.files[0];if(f)setFile(f);
+});
+
+async function doSubmit(){
+  if(!selFile||(CLIENT.checks_balance||0)<=0)return;
+  if(_lastStatus===false){showOfflineModal();return;}
+  const btn=document.getElementById('subBtn');
+  btn.classList.add('loading');btn.disabled=true;
+
+  const fileToUpload=selFile;
+  const optimisticId='opt-'+Date.now();
+  const optimisticSub={id:optimisticId,file_name:fileToUpload.name,submitted_at:new Date().toISOString(),status:'queued',_optimistic:true};
+  saveOptimistic(optimisticSub);
+  SUBS=[optimisticSub,...SUBS];
+  renderSubs();
+  rmFile({stopPropagation:()=>{}});
+  document.getElementById('history-sec').scrollIntoView({behavior:'smooth',block:'start'});
+
+  try{
+    const result=await submitFile(fileToUpload);
+    CLIENT.checks_balance=result.newValue;
+    const s=sessionStorage.getItem('cm_client')?'sessionStorage':'localStorage';
+    window[s].setItem('cm_client',JSON.stringify(CLIENT));
+    renderBalance();
+    clearOptimistic(optimisticId);
+    await loadSubs();
+    toast('✅ Submitted! Reports ready in 5–15 minutes.');
+  }catch(e){
+    clearOptimistic(optimisticId);
+    SUBS=SUBS.filter(s=>s.id!==optimisticId);
+    renderSubs();
+    toast(e.message||'Upload failed. Please try again.');
+  }
+  finally{btn.classList.remove('loading');btn.disabled=(CLIENT.checks_balance||0)<=0;}
+}
+
+/* ─── HELPERS ─── */
+function toggleDD(){document.getElementById('dd').classList.toggle('open');}
+/* Wire user-btn click here (not via inline onclick) so toggleDD is always defined */
+document.getElementById('ubtn').addEventListener('click',function(e){e.stopPropagation();toggleDD();});
+document.addEventListener('click',e=>{if(!document.getElementById('ubtn').contains(e.target))document.getElementById('dd').classList.remove('open');});
+function logout(){sessionStorage.removeItem('cm_client');localStorage.removeItem('cm_client');sessionStorage.removeItem(IDLE_KEY_CLIENT);localStorage.removeItem(IDLE_KEY_CLIENT);window.location.href='login.html';}
+function urlToRef(url){if(!url||!url.includes('supabase.co'))return url;const m=url.match(/\/storage\/v1\/object\/(?:public|sign)\/([^\/]+)\/(.+?)(?:\?|$)/);if(!m)return url;return m[1]+'::'+m[2];}
+function fd(iso){if(!iso)return'—';return new Date(iso).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function fmtSz(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB';}
+function x(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;');}
+/* Deterministic scramble of a submission's numeric id into a display code.
+   Same id always yields the same code (so support calls still work), and
+   consecutive ids produce unrelated-looking codes — a linear scramble isn't
+   enough here since small sequential ids would still show an obvious pattern
+   (e.g. 1,2,3 -> ...01,...02,...03). This is a standard 32-bit bit-mixer
+   (Murmur3 finalizer), which is a true bijection so codes never collide.
+   Not a security boundary — purely cosmetic. */
+function mix32(x){
+  x = Math.imul(x ^ (x>>>16), 0x45d9f3b) >>> 0;
+  x = Math.imul(x ^ (x>>>16), 0x45d9f3b) >>> 0;
+  return (x ^ (x>>>16)) >>> 0;
+}
+function refCode(id){
+  return 'CM-'+mix32(Number(id)).toString(36).toUpperCase().padStart(7,'0');
+}
+let tt;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),4000);}
+
+/* ─── IDLE LOGOUT (15 min) — timestamp-based (see touchClientActivity/
+   isClientIdleExpired above). A periodic check plus a visibilitychange
+   re-check catch the case where the tab was backgrounded and its timers
+   got throttled — the moment it's foregrounded again, elapsed wall-clock
+   time is checked and the session is killed if 15 min has genuinely
+   passed, rather than only after the next stray interaction restarts a
+   fresh setTimeout. ─── */
+function resetIdle(){ touchClientActivity(); }
+function idleCheckLoop(){
+  if(isClientIdleExpired()){
+    toast('Session expired due to inactivity.');
+    setTimeout(logout,1500);
+  }
+}
+['mousemove','keydown','click','touchstart','scroll'].forEach(e=>document.addEventListener(e,resetIdle,{passive:true}));
+setInterval(idleCheckLoop,20*1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)idleCheckLoop();});
+resetIdle();
+
+/* ─── PER-ORDER TIMER ─── */
+const TOTAL_MS=15*60*1000,ALERT_MS=10*60*1000,MAX_ALERT_MS=2*60*60*1000;
+// Persist alertedIds across refreshes so we never double-fire on the same order
+const _ALERTED_KEY='cm_alerted_ids';
+function _loadAlerted(){try{return new Set(JSON.parse(sessionStorage.getItem(_ALERTED_KEY)||'[]'));}catch(e){return new Set();}}
+function _saveAlerted(s){try{sessionStorage.setItem(_ALERTED_KEY,JSON.stringify([...s]));}catch(e){}}
+const alertedIds=_loadAlerted();
+function orderTimerStage(elapsedMs){
+  const remMs=Math.max(0,TOTAL_MS-elapsedMs);
+  const m=Math.floor(remMs/60000),sec=Math.floor((remMs%60000)/1000);
+  const clock=`${m}:${sec.toString().padStart(2,'0')}`;
+  if(elapsedMs<5*60*1000) return{cls:'ts-start',icon:'📥',clock,label:'Order queued'};
+  if(elapsedMs<10*60*1000) return{cls:'ts-mid',icon:'🔍',clock,label:'Order processing'};
+  if(elapsedMs<15*60*1000) return{cls:'ts-final',icon:'✨',clock,label:'Almost there, finalizing report'};
+  return{cls:'ts-late',icon:'💬',clock:null,label:'Taking a little longer than usual, thanks for the patience, our team is on it.'};
+}
+function tickOrderTimers(){
+  document.querySelectorAll('.ord-timer').forEach(el=>{
+    const submittedAt=el.getAttribute('data-submitted');
+    const id=el.getAttribute('data-id');
+    if(!submittedAt)return;
+    const elapsed=Date.now()-new Date(submittedAt).getTime();
+    const stage=orderTimerStage(elapsed);
+    el.className='ord-timer show '+stage.cls;
+    el.innerHTML=stage.clock
+      ?`<span class="ts-ico">${stage.icon}</span><span class="ts-clock">${stage.clock}</span><span class="ts-lbl">${stage.label}</span>`
+      :`<span class="ts-ico">${stage.icon}</span><span class="ts-lbl">${stage.label}</span>`;
+    // Only alert if between 10 min and 2 hours — never fire for historical orders
+    if(elapsed>=ALERT_MS&&elapsed<MAX_ALERT_MS&&!alertedIds.has(id)){
+      alertedIds.add(id);_saveAlerted(alertedIds);
+      fetch(`${API}?action=flag-stalled`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).catch(()=>{});
+    }
+  });
+}
+setInterval(tickOrderTimers,1000);
+
+/* ─── PROFILE MODAL ─── */
+function openProfile(){
+  document.getElementById('dd').classList.remove('open');
+  document.getElementById('profileInfo').textContent=`${CLIENT.name} · ${CLIENT.email}`;
+  document.getElementById('pwCurrent').value='';
+  document.getElementById('pwNew').value='';
+  document.getElementById('pwNew2').value='';
+  document.getElementById('pwMsg').style.display='none';
+  document.getElementById('profileOverlay').classList.add('open');
+}
+function closeProfile(){document.getElementById('profileOverlay').classList.remove('open');}
+async function changePassword(){
+  const cur=document.getElementById('pwCurrent').value;
+  const nw=document.getElementById('pwNew').value;
+  const nw2=document.getElementById('pwNew2').value;
+  const msg=document.getElementById('pwMsg');
+  const show=(txt,ok)=>{msg.textContent=txt;msg.style.color=ok?'var(--green)':' var(--red)';msg.style.display='block';}
+  if(!cur||!nw||!nw2){show('Please fill in all fields.',false);return;}
+  if(nw.length<8){show('New password must be at least 8 characters.',false);return;}
+  if(nw!==nw2){show('Passwords do not match.',false);return;}
+  try{
+    const r=await fetch('/api/auth?action=change-password',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({role:'client',id:CLIENT.id,token:CLIENT.token,currentPassword:cur,newPassword:nw})
+    });
+    const data=await r.json();
+    if(!r.ok||!data.ok){show(data.error||'Failed to update password.',false);return;}
+    show('Password updated successfully!',true);
+    setTimeout(closeProfile,1500);
+  }catch(e){show('Failed to update password.',false);}
+}
+
+/* ─── MOBILE NAV ─── */
+async function mobileNav(secId,el){
+  document.getElementById(secId).scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('.mni').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+
+/* ─── PAYMENT MODAL ─── */
+// Paystack PUBLIC key — safe to expose client-side, only unlocks the card popup (not funds).
+const PAYSTACK_PUBLIC_KEY = 'pk_live_d901f0f9c84e472566ad76b2cd121402feea1554';
+
+let _selectedPlan  = 'mpesa_1';
+let _payRegion     = null;   // 'KE' | 'INTL' — set by detectRegion()
+let _regionChecked = false;
+
+async function detectRegion(){
+  if(_regionChecked) return;
+  _regionChecked = true;
+  try {
+    const res  = await fetch('/api/paystack?action=region');
+    const data = await res.json();
+    // Default to Kenya (our primary market) if country can't be determined, e.g. local dev
+    _payRegion = (data.country && data.country !== 'KE') ? 'INTL' : 'KE';
+  } catch(e){
+    _payRegion = 'KE';
+  }
+  applyPayRegion();
+}
+
+function applyPayRegion(){
+  const isIntl = _payRegion === 'INTL';
+  document.getElementById('mpesa-plans').style.display   = isIntl ? 'none' : '';
+  document.getElementById('usd-plans').style.display     = isIntl ? '' : 'none';
+  document.getElementById('payPhoneWrap').style.display  = isIntl ? 'none' : '';
+  document.getElementById('btnPayMpesa').style.display   = isIntl ? 'none' : '';
+  document.getElementById('btnPayCard').style.display    = isIntl ? '' : 'none';
+  document.getElementById('payModalSub').textContent     = isIntl ? 'Pay via Card' : 'Pay via M-Pesa';
+  _selectedPlan = isIntl ? 'usd_1' : 'mpesa_1';
+}
+
+function openPayModal(){
+  resetPayModal();
+  document.getElementById('payOverlay').classList.add('open');
+  detectRegion();
+}
+function closePayModal(){
+  clearInterval(_payPollTimer);
+  document.getElementById('payOverlay').classList.remove('open');
+}
+
+function selectPlan(card){
+  card.parentElement.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  _selectedPlan = card.dataset.plan;
+}
+
+function resetPayModal(){
+  clearInterval(_payPollTimer);
+  document.getElementById('payStep1').style.display     = '';
+  document.getElementById('payStep2').style.display     = 'none';
+  document.getElementById('payStep3ok').style.display   = 'none';
+  document.getElementById('payStep3fail').style.display = 'none';
+  const phoneEl = document.getElementById('payPhone');
+  if(phoneEl) phoneEl.value = '';
+  const btnM = document.getElementById('btnPayMpesa');
+  if(btnM){ btnM.disabled = false; btnM.classList.remove('loading'); }
+  const btnC = document.getElementById('btnPayCard');
+  if(btnC){ btnC.disabled = false; btnC.classList.remove('loading'); }
+}
+
+let _payPollTimer = null, _payPollAttempts = 0;
+
+const USD_PLANS = { usd_1: {amount:130, checks:1}, usd_3: {amount:390, checks:3}, usd_5: {amount:650, checks:5} };
+
+function payWithCard(){
+  const btn = document.getElementById('btnPayCard');
+  if(!PAYSTACK_PUBLIC_KEY){
+    toast('❌ Card payments aren\'t set up yet — missing Paystack public key.');
+    return;
+  }
+  const plan = USD_PLANS[_selectedPlan];
+  if(!plan){ toast('❌ Select a plan first.'); return; }
+
+  btn.disabled = true;
+  btn.classList.add('loading');
+
+  const handler = PaystackPop.setup({
+    key:      PAYSTACK_PUBLIC_KEY,
+    email:    CLIENT.email,
+    amount:   plan.amount,     // already in cents, e.g. 130 = $1.30
+    currency: 'USD',
+    channels: ['card'],
+    ref:      'CM_' + Date.now() + '_' + Math.floor(Math.random()*1e6),
+    metadata: { client_id: CLIENT.id, plan_id: _selectedPlan, checks: plan.checks },
+    callback: function(response){
+      // Card charge succeeded at Paystack — verify + credit via our backend (idempotent)
+      document.getElementById('payStep1').style.display = 'none';
+      document.getElementById('payStep2').style.display = '';
+      document.getElementById('payWaitMsg').textContent = 'Confirming your payment...';
+      fetch('/api/paystack?action=status', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ reference: response.reference }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.status === 'success'){
+          CLIENT.checks_balance = data.new_balance;
+          const s = sessionStorage.getItem('cm_client') ? 'sessionStorage' : 'localStorage';
+          window[s].setItem('cm_client', JSON.stringify(CLIENT));
+          renderBalance();
+          document.getElementById('payStep2').style.display   = 'none';
+          document.getElementById('payStep3ok').style.display = '';
+          document.getElementById('paySuccessMsg').textContent =
+            '+' + data.checks_added + ' check' + (data.checks_added>1?'s':'') + ' added. New balance: ' + data.new_balance + ' checks.';
+        } else {
+          document.getElementById('payStep2').style.display     = 'none';
+          document.getElementById('payStep3fail').style.display = '';
+          document.getElementById('payErrorMsg').textContent    = 'We received your card payment but could not confirm it automatically — contact support with reference ' + response.reference + '.';
+        }
+      })
+      .catch(() => {
+        document.getElementById('payStep2').style.display     = 'none';
+        document.getElementById('payStep3fail').style.display = '';
+        document.getElementById('payErrorMsg').textContent    = 'We received your card payment but could not confirm it automatically — contact support with reference ' + response.reference + '.';
+      });
+    },
+    onClose: function(){
+      btn.disabled = false;
+      btn.classList.remove('loading');
+    },
+  });
+  handler.openIframe();
+}
+
+async function initPayment(){
+  const btn = document.getElementById('btnPayMpesa');
+  const phone = document.getElementById('payPhone').value.trim();
+  if(!/^(0|254|\+254)?[71]\d{8}$/.test(phone.replace(/\s/g,''))){
+    toast('❌ Enter a valid M-Pesa number, e.g. 0712345678');
+    return;
+  }
+  btn.disabled = true;
+  btn.classList.add('loading');
+
+  try {
+    const res  = await fetch('/api/paystack?action=initiate', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        planId:   _selectedPlan,
+        clientId: CLIENT.id,
+        email:    CLIENT.email,
+        phone:    phone,
+      }),
+    });
+    const data = await res.json();
+
+    if(!res.ok || !data.reference){
+      throw new Error(data.error || 'Could not start payment');
+    }
+
+    document.getElementById('payStep1').style.display = 'none';
+    document.getElementById('payStep2').style.display = '';
+    document.getElementById('payWaitMsg').textContent = data.display_text || 'Enter your M-Pesa PIN to approve the payment.';
+
+    pollPaymentStatus(data.reference);
+
+  } catch(err){
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    toast('❌ ' + (err.message || 'Payment error. Try again.'));
+  }
+}
+
+function pollPaymentStatus(reference){
+  clearInterval(_payPollTimer);
+  _payPollAttempts = 0;
+  const maxAttempts = 36; // ~36 * 5s = 180s, matching Paystack's STK timeout
+
+  _payPollTimer = setInterval(async () => {
+    _payPollAttempts++;
+    try {
+      const res  = await fetch('/api/paystack?action=status', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reference }),
+      });
+      const data = await res.json();
+
+      if(data.status === 'success'){
+        clearInterval(_payPollTimer);
+        CLIENT.checks_balance = data.new_balance;
+        const s = sessionStorage.getItem('cm_client') ? 'sessionStorage' : 'localStorage';
+        window[s].setItem('cm_client', JSON.stringify(CLIENT));
+        renderBalance();
+        document.getElementById('payStep2').style.display   = 'none';
+        document.getElementById('payStep3ok').style.display = '';
+        document.getElementById('paySuccessMsg').textContent =
+          '+' + data.checks_added + ' check' + (data.checks_added>1?'s':'') + ' added. New balance: ' + data.new_balance + ' checks.';
+        return;
+      }
+
+      if(data.status === 'failed' || data.status === 'abandoned'){
+        clearInterval(_payPollTimer);
+        document.getElementById('payStep2').style.display     = 'none';
+        document.getElementById('payStep3fail').style.display = '';
+        document.getElementById('payErrorMsg').textContent    = 'Payment was not completed on your phone. Please try again.';
+        return;
+      }
+
+      if(_payPollAttempts >= maxAttempts){
+        clearInterval(_payPollTimer);
+        document.getElementById('payStep2').style.display     = 'none';
+        document.getElementById('payStep3fail').style.display = '';
+        document.getElementById('payErrorMsg').textContent    = 'We didn\'t get a response in time. If you approved the prompt, your balance will update shortly — otherwise please try again.';
+      }
+      // else: still pending, keep polling
+    } catch(e){
+      // network hiccup — keep polling, don't abort on a single failed check
+    }
+  }, 5000);
+}
+
+function openTokenModal(){ openPayModal(); }
+function closeModal(){ closePayModal(); }
+async function redeemToken(){}
+
+/* ─── STATUS BANNER — live polling ─── */
+let _lastStatus = null;
+let _backAt = 'shortly';
+function offlinePopupMsg(){return 'We are currently offline. Please wait until we are back at '+_backAt+'.';}
+function showOfflineModal(){
+  document.getElementById('offlineModalMsg').textContent=offlinePopupMsg();
+  document.getElementById('offlineOverlay').classList.add('show');
+}
+function closeOfflineModal(){document.getElementById('offlineOverlay').classList.remove('show');}
+async function pollStatus(){
+  try{
+    const rows=await dbGet('settings',{key:'online_status'});
+    const isOnline=rows.length?rows[0].value==='true':true;
+    if(!isOnline){
+      const mrows=await dbGet('settings',{key:'offline_message'});
+      _backAt=mrows.length&&mrows[0].value?mrows[0].value:_backAt;
+    }
+    if(_lastStatus===isOnline)return;
+    _lastStatus=isOnline;
+    const b=document.getElementById('statusBanner');
+    const m=document.getElementById('sbMsg');
+    b.className='show '+(isOnline?'online':'offline');
+    m.textContent=isOnline?'System is Live. Make your submission.':'We are currently offline. Please wait until we are back in a few hours.';
+  }catch(e){console.warn('Status poll failed',e);}
+}
+function loadPageStatus(){pollStatus();}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollStatus();});
+</script>
+</body>
+</html>

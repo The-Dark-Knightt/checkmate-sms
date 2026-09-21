@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<script>(function(){var h=location.hostname;var p=h.split(".");if(p.length>2&&p[0]!=="www"){window.location.replace("https://"+h+"/client.html");}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+<title>CheckMate · Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0f1f45;--blue:#1a3fa0;--blue-mid:#2e56c8;--blue-bg:#edf1fb;
+  --red:#c0192c;--red-mid:#e02035;--pink:#ff6b7a;--green:#1a6e4a;--green-bg:#e8f5ef;
+  --text:#0f1f45;--muted:#6b7a99;--border:#dce3f0;--surface:#fff;
+  --discord:#5865F2;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;color:var(--text);font-size:15px}
+body{background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:24px 16px;position:relative;overflow:hidden;}
+body::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:rgba(255,255,255,.022);top:-200px;right:-200px;pointer-events:none}
+body::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:rgba(255,107,122,.045);bottom:-150px;left:-150px;pointer-events:none}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:44px 44px;pointer-events:none}
+.wrap{position:relative;z-index:1;width:100%;max-width:390px;animation:fadeUp .45s ease both}
+.logo-block{text-align:center;margin-bottom:20px}
+.logo{font-family:'DM Serif Display',serif;font-size:36px;letter-spacing:-.5px;line-height:1;white-space:nowrap}
+.logo .c{color:#fff}.logo .m{color:var(--pink)}
+.tagline{font-size:12px;color:rgba(255,255,255,.35);margin-top:5px;letter-spacing:.04em}
+
+/* Tab switcher */
+.tab-row{display:flex;background:rgba(255,255,255,.07);border-radius:12px;padding:4px;margin-bottom:16px;gap:4px;width:100%}
+.tab{flex:1;padding:9px;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s,color .2s;background:transparent;color:rgba(255,255,255,.5)}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+
+.card{background:var(--surface);border-radius:18px;padding:28px 26px 24px;box-shadow:0 20px 50px rgba(0,0,0,.3),0 4px 10px rgba(0,0,0,.12)}
+.card-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);margin-bottom:2px}
+.card-sub{font-size:13px;color:var(--muted);margin-bottom:22px}
+
+.alert{border-radius:9px;padding:9px 12px;font-size:13px;margin-bottom:14px;display:none;align-items:center;gap:7px}
+.alert.show{display:flex}
+.alert svg{width:14px;height:14px;stroke:currentColor;flex-shrink:0}
+.alert-err{background:#fdf0f2;border:1px solid #f5b8bf;color:var(--red)}
+.alert-ok{background:var(--green-bg);border:1px solid rgba(26,110,74,.25);color:var(--green)}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin-bottom:5px}
+.iw{position:relative;display:flex;align-items:center}
+.iico{position:absolute;left:12px;width:15px;height:15px;stroke:var(--muted);pointer-events:none;transition:stroke .2s}
+.field input{width:100%;padding:11px 12px 11px 38px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:#f8f9fc;outline:none;transition:border-color .2s,background .2s,box-shadow .2s}
+.field input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(26,63,160,.08)}
+.iw:focus-within .iico{stroke:var(--blue)}
+.pw-btn{position:absolute;right:11px;background:none;border:none;font-size:12px;font-weight:600;color:var(--blue);cursor:pointer;font-family:'DM Sans',sans-serif;padding:3px}
+
+.phone-row{display:flex;gap:8px}
+.dial-select{width:112px;flex-shrink:0;padding:11px 8px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:#f8f9fc;outline:none;transition:border-color .2s,background .2s,box-shadow .2s}
+.dial-select:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(26,63,160,.08)}
+
+.opt-row{display:flex;align-items:center;margin-bottom:18px}
+.chk-lbl{display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
+.chkbox{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,border-color .15s}
+.chkbox.on{background:var(--blue);border-color:var(--blue)}
+.chkbox svg{display:none}.chkbox.on svg{display:block}
+.chk-txt{font-size:13px;color:var(--muted)}
+
+/* Password strength bar */
+.pw-strength{margin-top:6px;display:none}
+.pw-strength.show{display:block}
+.ps-bar{height:3px;border-radius:999px;background:var(--border);overflow:hidden;margin-bottom:4px}
+.ps-fill{height:3px;border-radius:999px;transition:width .3s,background .3s;width:0}
+.ps-label{font-size:11px;color:var(--muted)}
+
+.btn-in{width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,transform .1s;letter-spacing:.01em;margin-bottom:16px}
+.btn-in:hover{background:var(--red-mid);transform:translateY(-1px)}
+.btn-in:active{transform:scale(.99)}
+.btn-in:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn-in svg{width:14px;height:14px;stroke:#fff;flex-shrink:0}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
+.btn-in.loading .spin{display:block}.btn-in.loading .bt{display:none}
+
+.discord-btn{width:100%;padding:11px;background:#fff;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:background .15s,border-color .15s;text-decoration:none;margin-bottom:16px;}
+.discord-btn:hover{background:#f0f1ff;border-color:var(--discord)}
+.discord-icon{width:18px;height:18px;flex-shrink:0}
+.gsi-wrap{display:flex;justify-content:center;margin-bottom:14px;min-height:40px}
+.divider{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.dl{flex:1;height:1px;background:var(--border)}
+.dt{font-size:12px;color:#b0bac9;white-space:nowrap}
+.card-foot{text-align:center;font-size:12px;color:#b0bac9}
+.card-foot a{color:var(--blue);font-weight:600;text-decoration:none;cursor:pointer}
+.foot{margin-top:16px;text-align:center;font-size:11px;color:rgba(255,255,255,.2);position:relative;z-index:1}
+
+/* Terms note */
+.terms-note{font-size:11px;color:#b0bac9;text-align:center;margin-top:-8px;margin-bottom:14px;line-height:1.5}
+.terms-note a{color:var(--blue);text-decoration:none}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Compact screens — shrink spacing so everything fits without scrolling */
+@media(max-height:780px){
+  .logo-block{margin-bottom:12px}
+  .tab-row{margin-bottom:12px}
+  .card{padding:20px 22px 18px}
+  .card-sub{margin-bottom:16px}
+  .field{margin-bottom:10px}
+  .opt-row{margin-bottom:12px}
+  .btn-in{margin-bottom:12px}
+  .discord-btn{margin-bottom:12px}
+}
+@media(max-height:650px){
+  .tagline{display:none}
+  .logo-block{margin-bottom:8px}
+  .card-sub{display:none}
+  .card{padding:16px 20px 14px}
+  .field{margin-bottom:8px}
+  .discord-btn{display:none}
+  .divider{display:none}
+}
+/* Narrow phones */
+@media(max-width:400px){
+  body{padding:16px 12px}
+  .logo{font-size:30px}
+  .card{padding:18px 16px 16px;border-radius:14px}
+  .card-title{font-size:19px}
+  .tab{font-size:12px;padding:8px 6px}
+  .field input{font-size:13px;padding:10px 10px 10px 34px}
+  .btn-in{padding:11px;font-size:13px}
+  .dial-select{width:92px;font-size:12px;padding:10px 6px}
+}
+</style>
+</head>
+<body>
+<div class="grid"></div>
+<div class="wrap">
+  <div class="logo-block">
+    <div class="logo"><span class="c">Check</span><span class="m">Mate</span></div>
+    <div class="tagline">Turnitin Plagiarism Checking</div>
+  </div>
+
+  <!-- Tab switcher (outside card so it sits between logo and card) -->
+  <div class="tab-row" id="tabRow">
+    <button class="tab active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+    <button class="tab" id="tabSignup" onclick="switchTab('signup')">Create Account</button>
+  </div>
+
+  <div class="card">
+
+    <!-- ── SIGN IN PANEL ── -->
+    <div id="loginPanel">
+      <div class="card-title">Welcome back</div>
+      <div class="card-sub">Sign in to your account to continue</div>
+      <div class="alert alert-err" id="loginErr">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="loginErrTxt">Invalid email or password.</span>
+      </div>
+      <div class="gsi-wrap" id="gsiLogin"></div>
+      <div class="divider"><div class="dl"></div><span class="dt">or use email</span><div class="dl"></div></div>
+      <div class="field">
+        <label for="lEm">Email address</label>
+        <div class="iw">
+          <svg class="iico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <input type="email" id="lEm" placeholder="you@example.com" autocomplete="email"/>
+        </div>
+      </div>
+      <div class="field">
+        <label for="lPw">Password</label>
+        <div class="iw">
+          <svg class="iico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="lPw" placeholder="••••••••••••" autocomplete="current-password"/>
+          <button class="pw-btn" type="button" onclick="togglePw('lPw',this)">Show</button>
+        </div>
+      </div>
+      <div class="opt-row" style="justify-content:space-between">
+        <label class="chk-lbl" onclick="toggleChk()">
+          <div class="chkbox" id="chkbox">
+            <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><polyline points="1,3.5 3.5,6 8,1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="chk-txt">Remember me</span>
+        </label>
+        <a style="font-size:13px;color:var(--blue);font-weight:600;text-decoration:none;cursor:pointer" onclick="switchTab('forgot')">Forgot password?</a>
+      </div>
+      <button class="btn-in" id="loginBtn" onclick="doLogin()">
+        <div class="spin"></div>
+        <span class="bt" style="display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Sign In
+        </span>
+      </button>
+      <div class="divider"><div class="dl"></div><span class="dt">For updates, join Discord</span><div class="dl"></div></div>
+      <a class="discord-btn" href="https://discord.gg/XcE6qhw7Hw" target="_blank" rel="noopener">
+        <svg class="discord-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.03.056a19.9 19.9 0 0 0 5.993 3.03.077.077 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" fill="#5865F2"/>
+        </svg>
+        <span style="color:#5865F2;font-weight:600">Read Reviews on Discord</span>
+      </a>
+      <div class="card-foot">No account? <a onclick="switchTab('signup')">Create one free</a></div>
+    </div>
+
+    <!-- ── SIGN UP PANEL ── -->
+    <div id="signupPanel" style="display:none">
+      <div class="card-title">Create account</div>
+      <div class="card-sub">Get started — it only takes a moment</div>
+      <div class="alert alert-err" id="signupErr">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="signupErrTxt">Something went wrong.</span>
+      </div>
+      <div class="alert alert-ok" id="signupOk">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span id="signupOkTxt">Account created! Signing you in…</span>
+      </div>
+      <div class="gsi-wrap" id="gsiSignup"></div>
+      <div class="divider"><div class="dl"></div><span class="dt">or use email</span><div class="dl"></div></div>
+      <div class="field">
+        <label for="sName">Full name</label>
+        <div class="iw">
+          <svg class="iico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input type="text" id="sName" placeholder="Jane Smith" autocomplete="name"/>
+        </div>
+      </div>
+      <div class="field">
+        <label for="sEm">Email address</label>
+        <div class="iw">
+          <svg class="iico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <input type="email" id="sEm" placeholder="you@example.com" autocomplete="email"/>
+        </div>
+      </div>
+      <div class="field">
+        <label for="sPhoneNum">Phone number</label>
+        <div class="phone-row">
+          <select id="sDial" class="dial-select"></select>
+          <div class="iw" style="flex:1">
+            <svg class="iico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <input type="tel" id="sPhoneNum" placeholder="712 345 678" autocomplete="tel-national" inputmode="numeric"/>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="sPw">Password</label>
+        <div class="iw">
+          <svg class="iico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="sPw" placeholder="Min. 8 characters" autocomplete="new-password" oninput="checkStrength(this.value)"/>
+          <button class="pw-btn" type="button" onclick="togglePw('sPw',this)">Show</button>
+        </div>
+        <div class="pw-strength" id="pwStrength">
+          <div class="ps-bar"><div class="ps-fill" id="psFill"></div></div>
+          <div class="ps-label" id="psLabel"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="sPw2">Confirm password</label>
+        <div class="iw">
+          <svg class="iico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="sPw2" placeholder="Re-enter password" autocomplete="new-password"/>
+          <button class="pw-btn" type="button" onclick="togglePw('sPw2',this)">Show</button>
+        </div>
+      </div>
+      <div class="terms-note">By creating an account you agree to our <a href="#">Terms of Service</a></div>
+      <button class="btn-in" id="signupBtn" onclick="doSignup()">
+        <div class="spin"></div>
+        <span class="bt" style="display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          Create Account
+        </span>
+      </button>
+      <div class="card-foot">Already have an account? <a onclick="switchTab('login')">Sign in</a></div>
+    </div>
+
+    <!-- ── FORGOT PASSWORD PANEL ── -->
+    <div id="forgotPanel" style="display:none">
+      <div class="card-title">Reset your password</div>
+      <div class="card-sub">Enter your account email and we'll send you a reset link</div>
+      <div class="alert alert-err" id="forgotErr">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="forgotErrTxt">Something went wrong.</span>
+      </div>
+      <div class="alert alert-ok" id="forgotOk">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span id="forgotOkTxt">If an account exists with that email, a reset link has been sent.</span>
+      </div>
+      <div class="field" id="forgotEmailField">
+        <label for="fEm">Email address</label>
+        <div class="iw">
+          <svg class="iico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <input type="email" id="fEm" placeholder="you@example.com" autocomplete="email"/>
+        </div>
+      </div>
+      <button class="btn-in" id="forgotBtn" onclick="doForgotPassword()">
+        <div class="spin"></div>
+        <span class="bt" style="display:flex;align-items:center;gap:8px">Send Reset Link</span>
+      </button>
+      <div class="card-foot">Remembered it? <a onclick="switchTab('login')">Sign in</a></div>
+    </div>
+
+    <!-- ── SET NEW PASSWORD PANEL (from emailed link) ── -->
+    <div id="resetPanel" style="display:none">
+      <div class="card-title">Set a new password</div>
+      <div class="card-sub">Choose a new password for your account</div>
+      <div class="alert alert-err" id="resetErr">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="resetErrTxt">Something went wrong.</span>
+      </div>
+      <div class="field">
+        <label for="rPw">New password</label>
+        <div class="iw">
+          <svg class="iico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="rPw" placeholder="Min. 8 characters" autocomplete="new-password" oninput="checkStrength(this.value,'rPwStrength','rPsFill','rPsLabel')"/>
+          <button class="pw-btn" type="button" onclick="togglePw('rPw',this)">Show</button>
+        </div>
+        <div class="pw-strength" id="rPwStrength">
+          <div class="ps-bar"><div class="ps-fill" id="rPsFill"></div></div>
+          <div class="ps-label" id="rPsLabel"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="rPw2">Confirm new password</label>
+        <div class="iw">
+          <svg class="iico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="rPw2" placeholder="Re-enter password" autocomplete="new-password"/>
+          <button class="pw-btn" type="button" onclick="togglePw('rPw2',this)">Show</button>
+        </div>
+      </div>
+      <button class="btn-in" id="resetBtn" onclick="doResetPassword()">
+        <div class="spin"></div>
+        <span class="bt" style="display:flex;align-items:center;gap:8px">Set New Password</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+<div class="foot">© 2025 CheckMate</div>
+
+<script>
+const API='/api/db';
+let rem=false;
+
+/* ── GOOGLE SIGN-IN ──
+   No client ID is pasted here — it's fetched from the server, so all you
+   need to do is set GOOGLE_CLIENT_ID in Vercel's environment variables and
+   redeploy. Until that's set, the buttons below just stay hidden. */
+let GOOGLE_CLIENT_ID = '';
+
+function initGoogleSignIn(){
+  if(!GOOGLE_CLIENT_ID){
+    document.querySelectorAll('.gsi-wrap').forEach(el=>{el.style.display='none';if(el.nextElementSibling&&el.nextElementSibling.classList.contains('divider'))el.nextElementSibling.style.display='none';});
+    return;
+  }
+  if(typeof google==='undefined' || !google.accounts) return;
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCredential,
+    auto_select: false,
+    itp_support: true
+  });
+  const opts={type:'standard',theme:'outline',size:'large',shape:'pill',text:'continue_with',logo_alignment:'center',width:280};
+  const elLogin=document.getElementById('gsiLogin');
+  const elSignup=document.getElementById('gsiSignup');
+  if(elLogin) google.accounts.id.renderButton(elLogin,opts);
+  if(elSignup) google.accounts.id.renderButton(elSignup,{...opts,text:'signup_with'});
+}
+
+async function handleGoogleCredential(response){
+  const err=document.getElementById('loginPanel').style.display!=='none'?['loginErr','loginErrTxt']:['signupErr','signupErrTxt'];
+  try{
+    const r=await fetch('/api/auth?action=google-login',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({credential:response.credential})
+    });
+    const data=await r.json();
+    if(!r.ok||!data.ok){showErr(err[0],err[1],data.error||'Google sign-in failed. Please try again.');return;}
+    const storage=rem?localStorage:sessionStorage;
+    storage.setItem('cm_client',JSON.stringify({...data.user,token:data.token}));
+    window.location.href='dashboard.html';
+  }catch(e){showErr(err[0],err[1],'Google sign-in failed. Please try again.');}
+}
+
+/* Fetch the Client ID from the server, then wait for the GSI script (loaded
+   async) before rendering. If nothing's configured yet, buttons stay hidden. */
+fetch('/api/auth?action=google-config')
+  .then(r=>r.json())
+  .then(cfg=>{
+    GOOGLE_CLIENT_ID = cfg && cfg.clientId ? cfg.clientId : '';
+    if(!GOOGLE_CLIENT_ID){ initGoogleSignIn(); return; }
+    (function waitForGoogleLib(tries){
+      if(typeof google!=='undefined'&&google.accounts){initGoogleSignIn();return;}
+      if(tries<=0)return;
+      setTimeout(()=>waitForGoogleLib(tries-1),200);
+    })(50);
+  })
+  .catch(()=>{ initGoogleSignIn(); }); // config fetch failed — hide the buttons rather than break the page
+
+/* ── COUNTRY DIAL CODES (all countries, Kenya pinned to top) ── */
+const DIAL_CODES=[
+  {c:'AF',d:'+93',n:'Afghanistan'},
+  {c:'AL',d:'+355',n:'Albania'},
+  {c:'DZ',d:'+213',n:'Algeria'},
+  {c:'AD',d:'+376',n:'Andorra'},
+  {c:'AO',d:'+244',n:'Angola'},
+  {c:'AR',d:'+54',n:'Argentina'},
+  {c:'AM',d:'+374',n:'Armenia'},
+  {c:'AU',d:'+61',n:'Australia'},
+  {c:'AT',d:'+43',n:'Austria'},
+  {c:'AZ',d:'+994',n:'Azerbaijan'},
+  {c:'BS',d:'+1242',n:'Bahamas'},
+  {c:'BH',d:'+973',n:'Bahrain'},
+  {c:'BD',d:'+880',n:'Bangladesh'},
+  {c:'BB',d:'+1246',n:'Barbados'},
+  {c:'BY',d:'+375',n:'Belarus'},
+  {c:'BE',d:'+32',n:'Belgium'},
+  {c:'BZ',d:'+501',n:'Belize'},
+  {c:'BJ',d:'+229',n:'Benin'},
+  {c:'BT',d:'+975',n:'Bhutan'},
+  {c:'BO',d:'+591',n:'Bolivia'},
+  {c:'BA',d:'+387',n:'Bosnia and Herzegovina'},
+  {c:'BW',d:'+267',n:'Botswana'},
+  {c:'BR',d:'+55',n:'Brazil'},
+  {c:'BN',d:'+673',n:'Brunei'},
+  {c:'BG',d:'+359',n:'Bulgaria'},
+  {c:'BF',d:'+226',n:'Burkina Faso'},
+  {c:'BI',d:'+257',n:'Burundi'},
+  {c:'KH',d:'+855',n:'Cambodia'},
+  {c:'CM',d:'+237',n:'Cameroon'},
+  {c:'CA',d:'+1',n:'Canada'},
+  {c:'CV',d:'+238',n:'Cape Verde'},
+  {c:'CF',d:'+236',n:'Central African Republic'},
+  {c:'TD',d:'+235',n:'Chad'},
+  {c:'CL',d:'+56',n:'Chile'},
+  {c:'CN',d:'+86',n:'China'},
+  {c:'CO',d:'+57',n:'Colombia'},
+  {c:'KM',d:'+269',n:'Comoros'},
+  {c:'CG',d:'+242',n:'Congo'},
+  {c:'CR',d:'+506',n:'Costa Rica'},
+  {c:'HR',d:'+385',n:'Croatia'},
+  {c:'CU',d:'+53',n:'Cuba'},
+  {c:'CY',d:'+357',n:'Cyprus'},
+  {c:'CZ',d:'+420',n:'Czech Republic'},
+  {c:'CD',d:'+243',n:'DR Congo'},
+  {c:'DK',d:'+45',n:'Denmark'},
+  {c:'DJ',d:'+253',n:'Djibouti'},
+  {c:'DO',d:'+1809',n:'Dominican Republic'},
+  {c:'EC',d:'+593',n:'Ecuador'},
+  {c:'EG',d:'+20',n:'Egypt'},
+  {c:'SV',d:'+503',n:'El Salvador'},
+  {c:'GQ',d:'+240',n:'Equatorial Guinea'},
+  {c:'ER',d:'+291',n:'Eritrea'},
+  {c:'EE',d:'+372',n:'Estonia'},
+  {c:'SZ',d:'+268',n:'Eswatini'},
+  {c:'ET',d:'+251',n:'Ethiopia'},
+  {c:'FJ',d:'+679',n:'Fiji'},
+  {c:'FI',d:'+358',n:'Finland'},
+  {c:'FR',d:'+33',n:'France'},
+  {c:'GA',d:'+241',n:'Gabon'},
+  {c:'GM',d:'+220',n:'Gambia'},
+  {c:'GE',d:'+995',n:'Georgia'},
+  {c:'DE',d:'+49',n:'Germany'},
+  {c:'GH',d:'+233',n:'Ghana'},
+  {c:'GR',d:'+30',n:'Greece'},
+  {c:'GT',d:'+502',n:'Guatemala'},
+  {c:'GN',d:'+224',n:'Guinea'},
+  {c:'GW',d:'+245',n:'Guinea-Bissau'},
+  {c:'GY',d:'+592',n:'Guyana'},
+  {c:'HT',d:'+509',n:'Haiti'},
+  {c:'HN',d:'+504',n:'Honduras'},
+  {c:'HK',d:'+852',n:'Hong Kong'},
+  {c:'HU',d:'+36',n:'Hungary'},
+  {c:'IS',d:'+354',n:'Iceland'},
+  {c:'IN',d:'+91',n:'India'},
+  {c:'ID',d:'+62',n:'Indonesia'},
+  {c:'IR',d:'+98',n:'Iran'},
+  {c:'IQ',d:'+964',n:'Iraq'},
+  {c:'IE',d:'+353',n:'Ireland'},
+  {c:'IL',d:'+972',n:'Israel'},
+  {c:'IT',d:'+39',n:'Italy'},
+  {c:'CI',d:'+225',n:'Ivory Coast'},
+  {c:'JM',d:'+1876',n:'Jamaica'},
+  {c:'JP',d:'+81',n:'Japan'},
+  {c:'JO',d:'+962',n:'Jordan'},
+  {c:'KZ',d:'+7',n:'Kazakhstan'},
+  {c:'KE',d:'+254',n:'Kenya'},
+  {c:'KI',d:'+686',n:'Kiribati'},
+  {c:'XK',d:'+383',n:'Kosovo'},
+  {c:'KW',d:'+965',n:'Kuwait'},
+  {c:'KG',d:'+996',n:'Kyrgyzstan'},
+  {c:'LA',d:'+856',n:'Laos'},
+  {c:'LV',d:'+371',n:'Latvia'},
+  {c:'LB',d:'+961',n:'Lebanon'},
+  {c:'LS',d:'+266',n:'Lesotho'},
+  {c:'LR',d:'+231',n:'Liberia'},
+  {c:'LY',d:'+218',n:'Libya'},
+  {c:'LI',d:'+423',n:'Liechtenstein'},
+  {c:'LT',d:'+370',n:'Lithuania'},
+  {c:'LU',d:'+352',n:'Luxembourg'},
+  {c:'MO',d:'+853',n:'Macau'},
+  {c:'MG',d:'+261',n:'Madagascar'},
+  {c:'MW',d:'+265',n:'Malawi'},
+  {c:'MY',d:'+60',n:'Malaysia'},
+  {c:'MV',d:'+960',n:'Maldives'},
+  {c:'ML',d:'+223',n:'Mali'},
+  {c:'MT',d:'+356',n:'Malta'},
+  {c:'MH',d:'+692',n:'Marshall Islands'},
+  {c:'MR',d:'+222',n:'Mauritania'},
+  {c:'MU',d:'+230',n:'Mauritius'},
+  {c:'MX',d:'+52',n:'Mexico'},
+  {c:'FM',d:'+691',n:'Micronesia'},
+  {c:'MD',d:'+373',n:'Moldova'},
+  {c:'MC',d:'+377',n:'Monaco'},
+  {c:'MN',d:'+976',n:'Mongolia'},
+  {c:'ME',d:'+382',n:'Montenegro'},
+  {c:'MA',d:'+212',n:'Morocco'},
+  {c:'MZ',d:'+258',n:'Mozambique'},
+  {c:'MM',d:'+95',n:'Myanmar'},
+  {c:'NA',d:'+264',n:'Namibia'},
+  {c:'NR',d:'+674',n:'Nauru'},
+  {c:'NP',d:'+977',n:'Nepal'},
+  {c:'NL',d:'+31',n:'Netherlands'},
+  {c:'NZ',d:'+64',n:'New Zealand'},
+  {c:'NI',d:'+505',n:'Nicaragua'},
+  {c:'NE',d:'+227',n:'Niger'},
+  {c:'NG',d:'+234',n:'Nigeria'},
+  {c:'KP',d:'+850',n:'North Korea'},
+  {c:'MK',d:'+389',n:'North Macedonia'},
+  {c:'NO',d:'+47',n:'Norway'},
+  {c:'OM',d:'+968',n:'Oman'},
+  {c:'PK',d:'+92',n:'Pakistan'},
+  {c:'PW',d:'+680',n:'Palau'},
+  {c:'PS',d:'+970',n:'Palestine'},
+  {c:'PA',d:'+507',n:'Panama'},
+  {c:'PG',d:'+675',n:'Papua New Guinea'},
+  {c:'PY',d:'+595',n:'Paraguay'},
+  {c:'PE',d:'+51',n:'Peru'},
+  {c:'PH',d:'+63',n:'Philippines'},
+  {c:'PL',d:'+48',n:'Poland'},
+  {c:'PT',d:'+351',n:'Portugal'},
+  {c:'QA',d:'+974',n:'Qatar'},
+  {c:'RO',d:'+40',n:'Romania'},
+  {c:'RU',d:'+7',n:'Russia'},
+  {c:'RW',d:'+250',n:'Rwanda'},
+  {c:'WS',d:'+685',n:'Samoa'},
+  {c:'SM',d:'+378',n:'San Marino'},
+  {c:'ST',d:'+239',n:'Sao Tome and Principe'},
+  {c:'SA',d:'+966',n:'Saudi Arabia'},
+  {c:'SN',d:'+221',n:'Senegal'},
+  {c:'RS',d:'+381',n:'Serbia'},
+  {c:'SC',d:'+248',n:'Seychelles'},
+  {c:'SL',d:'+232',n:'Sierra Leone'},
+  {c:'SG',d:'+65',n:'Singapore'},
+  {c:'SK',d:'+421',n:'Slovakia'},
+  {c:'SI',d:'+386',n:'Slovenia'},
+  {c:'SB',d:'+677',n:'Solomon Islands'},
+  {c:'SO',d:'+252',n:'Somalia'},
+  {c:'ZA',d:'+27',n:'South Africa'},
+  {c:'KR',d:'+82',n:'South Korea'},
+  {c:'SS',d:'+211',n:'South Sudan'},
+  {c:'ES',d:'+34',n:'Spain'},
+  {c:'LK',d:'+94',n:'Sri Lanka'},
+  {c:'SD',d:'+249',n:'Sudan'},
+  {c:'SR',d:'+597',n:'Suriname'},
+  {c:'SE',d:'+46',n:'Sweden'},
+  {c:'CH',d:'+41',n:'Switzerland'},
+  {c:'SY',d:'+963',n:'Syria'},
+  {c:'TW',d:'+886',n:'Taiwan'},
+  {c:'TJ',d:'+992',n:'Tajikistan'},
+  {c:'TZ',d:'+255',n:'Tanzania'},
+  {c:'TH',d:'+66',n:'Thailand'},
+  {c:'TL',d:'+670',n:'Timor-Leste'},
+  {c:'TG',d:'+228',n:'Togo'},
+  {c:'TO',d:'+676',n:'Tonga'},
+  {c:'TT',d:'+1868',n:'Trinidad and Tobago'},
+  {c:'TN',d:'+216',n:'Tunisia'},
+  {c:'TR',d:'+90',n:'Turkey'},
+  {c:'TM',d:'+993',n:'Turkmenistan'},
+  {c:'TV',d:'+688',n:'Tuvalu'},
+  {c:'UG',d:'+256',n:'Uganda'},
+  {c:'UA',d:'+380',n:'Ukraine'},
+  {c:'AE',d:'+971',n:'United Arab Emirates'},
+  {c:'GB',d:'+44',n:'United Kingdom'},
+  {c:'US',d:'+1',n:'United States'},
+  {c:'UY',d:'+598',n:'Uruguay'},
+  {c:'UZ',d:'+998',n:'Uzbekistan'},
+  {c:'VU',d:'+678',n:'Vanuatu'},
+  {c:'VA',d:'+379',n:'Vatican City'},
+  {c:'VE',d:'+58',n:'Venezuela'},
+  {c:'VN',d:'+84',n:'Vietnam'},
+  {c:'YE',d:'+967',n:'Yemen'},
+  {c:'ZM',d:'+260',n:'Zambia'},
+  {c:'ZW',d:'+263',n:'Zimbabwe'},
+];
+
+function populateDialCodes(){
+  const sel=document.getElementById('sDial');
+  const kenya=DIAL_CODES.find(o=>o.c==='KE');
+  const rest=DIAL_CODES.filter(o=>o.c!=='KE');
+  const opt=o=>`<option value="${o.d}">${o.d}  ${o.n}</option>`;
+  sel.innerHTML=opt(kenya)+'<option disabled>──────────</option>'+rest.map(opt).join('');
+  sel.value=kenya.d; // default to Kenya
+}
+populateDialCodes();
+
+/* ── TAB SWITCH ── */
+function switchTab(t){
+  const panels={login:'loginPanel',signup:'signupPanel',forgot:'forgotPanel',reset:'resetPanel'};
+  Object.values(panels).forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById(panels[t]).style.display='block';
+
+  const showTabs=(t==='login'||t==='signup');
+  document.getElementById('tabRow').style.display=showTabs?'flex':'none';
+  document.getElementById('tabLogin').classList.toggle('active',t==='login');
+  document.getElementById('tabSignup').classList.toggle('active',t==='signup');
+
+  /* clear alerts */
+  ['loginErr','signupErr','signupOk','forgotErr','forgotOk','resetErr'].forEach(id=>document.getElementById(id).classList.remove('show'));
+
+  if(t==='forgot'){
+    document.getElementById('forgotEmailField').style.display='block';
+    document.getElementById('forgotBtn').style.display='flex';
+    document.getElementById('fEm').value='';
+  }
+}
+
+/* ── HELPERS ── */
+function togglePw(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'Show':'Hide';}
+function toggleChk(){rem=!rem;document.getElementById('chkbox').classList.toggle('on',rem);}
+function showErr(panelErr,msgId,msg){document.getElementById(msgId).textContent=msg;document.getElementById(panelErr).classList.add('show');}
+
+/* ── PASSWORD STRENGTH ── */
+function checkStrength(pw,elId='pwStrength',fillId='psFill',labelId='psLabel'){
+  const el=document.getElementById(elId);
+  const fill=document.getElementById(fillId);
+  const label=document.getElementById(labelId);
+  if(!pw){el.classList.remove('show');return;}
+  el.classList.add('show');
+  let score=0;
+  if(pw.length>=8)score++;
+  if(pw.length>=12)score++;
+  if(/[A-Z]/.test(pw))score++;
+  if(/[0-9]/.test(pw))score++;
+  if(/[^A-Za-z0-9]/.test(pw))score++;
+  const levels=[
+    {w:'20%',bg:'#e02035',txt:'Too weak'},
+    {w:'40%',bg:'#e65100',txt:'Weak'},
+    {w:'60%',bg:'#b45309',txt:'Fair'},
+    {w:'80%',bg:'#1a6e4a',txt:'Strong'},
+    {w:'100%',bg:'#1a6e4a',txt:'Very strong'},
+  ];
+  const l=levels[Math.min(score,4)];
+  fill.style.width=l.w;fill.style.background=l.bg;
+  label.textContent=l.txt;label.style.color=l.bg;
+}
+
+/* ── SIGN IN ── */
+async function doLogin(){
+  const email=document.getElementById('lEm').value.trim();
+  const pw=document.getElementById('lPw').value;
+  document.getElementById('loginErr').classList.remove('show');
+  if(!email||!pw){showErr('loginErr','loginErrTxt','Please enter your email and password.');return;}
+  const btn=document.getElementById('loginBtn');
+  btn.classList.add('loading');btn.disabled=true;
+  try{
+    const r=await fetch('/api/auth?action=login',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pw})
+    });
+    const data=await r.json();
+
+    if(!r.ok){showErr('loginErr','loginErrTxt',data.error||'Login failed. Please try again.');return;}
+
+    if(data.requiresReset){
+      await handleForcedReset(data);
+      return;
+    }
+
+    const storage=rem?localStorage:sessionStorage;
+    if(data.role==='reseller'){
+      storage.setItem('cm_reseller',JSON.stringify({...data.user,token:data.token,is_reseller:true}));
+      window.location.href='reseller.html';
+    } else {
+      storage.setItem('cm_client',JSON.stringify({...data.user,token:data.token}));
+      window.location.href='dashboard.html';
+    }
+  }catch(e){showErr('loginErr','loginErrTxt','Login failed. Please try again.');}
+  finally{btn.classList.remove('loading');btn.disabled=false;}
+}
+
+/* ── FORCED PASSWORD RESET (your old password was exposed in a leak — you must set a new one) ── */
+async function handleForcedReset(data){
+  showErr('loginErr','loginErrTxt','For your security, please set a new password to continue.');
+  let np='';
+  while(true){
+    np=prompt('Set a new password (min 8 characters):');
+    if(np===null){return;} // user cancelled
+    if(np.length>=8)break;
+    alert('Password must be at least 8 characters.');
+  }
+  const np2=prompt('Confirm new password:');
+  if(np2!==np){alert('Passwords did not match. Please log in again to retry.');return;}
+
+  try{
+    const r=await fetch('/api/auth?action=complete-reset',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({role:data.role,id:data.id,resetToken:data.resetToken,newPassword:np})
+    });
+    const result=await r.json();
+    if(!r.ok||!result.ok){alert(result.error||'Could not reset password. Please log in again.');return;}
+    const storage=rem?localStorage:sessionStorage;
+    if(data.role==='reseller'){
+      storage.setItem('cm_reseller',JSON.stringify({...result.user,token:result.token,is_reseller:true}));
+      window.location.href='reseller.html';
+    } else {
+      storage.setItem('cm_client',JSON.stringify({...result.user,token:result.token}));
+      window.location.href='dashboard.html';
+    }
+  }catch(e){alert('Could not reset password. Please log in again.');}
+}
+
+/* ── SIGN UP ── */
+async function doSignup(){
+  const name=document.getElementById('sName').value.trim();
+  const email=document.getElementById('sEm').value.trim();
+  const dial=document.getElementById('sDial').value;
+  const phoneNum=document.getElementById('sPhoneNum').value.trim().replace(/[^\d]/g,'').replace(/^0+/,'');
+  const phone=phoneNum?dial+phoneNum:'';
+  const pw=document.getElementById('sPw').value;
+  const pw2=document.getElementById('sPw2').value;
+  document.getElementById('signupErr').classList.remove('show');
+  document.getElementById('signupOk').classList.remove('show');
+
+  /* Validation */
+  if(!name){showErr('signupErr','signupErrTxt','Please enter your full name.');return;}
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('signupErr','signupErrTxt','Please enter a valid email address.');return;}
+  if(!phoneNum||phoneNum.length<6){showErr('signupErr','signupErrTxt','Please enter a valid phone number.');return;}
+  if(pw.length<8){showErr('signupErr','signupErrTxt','Password must be at least 8 characters.');return;}
+  if(pw!==pw2){showErr('signupErr','signupErrTxt','Passwords do not match.');return;}
+
+  const btn=document.getElementById('signupBtn');
+  btn.classList.add('loading');btn.disabled=true;
+
+  try{
+    const r=await fetch('/api/auth?action=signup',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,email,phone,password:pw})
+    });
+    const data=await r.json();
+    if(!r.ok){showErr('signupErr','signupErrTxt',data.error||'Sign up failed. Please try again.');return;}
+
+    /* Show success then redirect */
+    document.getElementById('signupOk').classList.add('show');
+    document.getElementById('signupOkTxt').textContent='Account created! Signing you in…';
+
+    localStorage.setItem('cm_client',JSON.stringify({...data.user,token:data.token}));
+    setTimeout(()=>{ window.location.href='dashboard.html'; },1200);
+
+  }catch(e){showErr('signupErr','signupErrTxt','Sign up failed. Please try again.');}
+  finally{btn.classList.remove('loading');btn.disabled=false;}
+}
+
+/* ── FORGOT PASSWORD ── */
+async function doForgotPassword(){
+  const email=document.getElementById('fEm').value.trim();
+  document.getElementById('forgotErr').classList.remove('show');
+  document.getElementById('forgotOk').classList.remove('show');
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('forgotErr','forgotErrTxt','Please enter a valid email address.');return;}
+
+  const btn=document.getElementById('forgotBtn');
+  btn.classList.add('loading');btn.disabled=true;
+  try{
+    const r=await fetch('/api/auth?action=forgot-password',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email})
+    });
+    const data=await r.json();
+    if(!r.ok){showErr('forgotErr','forgotErrTxt',data.error||'Something went wrong. Please try again.');return;}
+    document.getElementById('forgotOk').classList.add('show');
+    document.getElementById('forgotEmailField').style.display='none';
+    btn.style.display='none';
+  }catch(e){showErr('forgotErr','forgotErrTxt','Something went wrong. Please try again.');}
+  finally{btn.classList.remove('loading');btn.disabled=false;}
+}
+
+/* ── RESET PASSWORD (from emailed link) ── */
+let resetTokenFromUrl=null;
+async function doResetPassword(){
+  const np=document.getElementById('rPw').value;
+  const np2=document.getElementById('rPw2').value;
+  document.getElementById('resetErr').classList.remove('show');
+  if(np.length<8){showErr('resetErr','resetErrTxt','Password must be at least 8 characters.');return;}
+  if(np!==np2){showErr('resetErr','resetErrTxt','Passwords do not match.');return;}
+  if(!resetTokenFromUrl){showErr('resetErr','resetErrTxt','This reset link is invalid. Please request a new one.');return;}
+
+  const btn=document.getElementById('resetBtn');
+  btn.classList.add('loading');btn.disabled=true;
+  try{
+    const r=await fetch('/api/auth?action=reset-password',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({resetToken:resetTokenFromUrl,newPassword:np})
+    });
+    const data=await r.json();
+    if(!r.ok){showErr('resetErr','resetErrTxt',data.error||'Something went wrong. Please try again.');return;}
+
+    sessionStorage.setItem('cm_client',JSON.stringify({...data.user,token:data.token}));
+    history.replaceState(null,'','/login.html');
+    window.location.href='dashboard.html';
+  }catch(e){showErr('resetErr','resetErrTxt','Something went wrong. Please try again.');}
+  finally{btn.classList.remove('loading');btn.disabled=false;}
+}
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  if(document.getElementById('loginPanel').style.display!=='none'){doLogin();}
+  else if(document.getElementById('signupPanel').style.display!=='none'){doSignup();}
+  else if(document.getElementById('forgotPanel').style.display!=='none'){doForgotPassword();}
+  else if(document.getElementById('resetPanel').style.display!=='none'){doResetPassword();}
+});
+
+/* ── RESET LINK FROM EMAIL ── */
+const urlParams=new URLSearchParams(window.location.search);
+const resetParam=urlParams.get('reset');
+if(resetParam){
+  resetTokenFromUrl=resetParam;
+  switchTab('reset');
+} else {
+  /* ── ALREADY LOGGED IN ── */
+  const exR=sessionStorage.getItem('cm_reseller')||localStorage.getItem('cm_reseller');
+  if(exR){window.location.href='reseller.html';}
+  const exC=sessionStorage.getItem('cm_client')||localStorage.getItem('cm_client');
+  if(exC){window.location.href='dashboard.html';}
+}
+</script>
+</body>
+</html>

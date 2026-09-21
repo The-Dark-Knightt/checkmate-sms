@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+<title>CheckMate · Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0f1f45;--blue:#1a3fa0;--blue-mid:#2e56c8;--blue-bg:#edf1fb;
+  --red:#c0192c;--red-mid:#e02035;--red-bg:#fdf0f2;
+  --pink:#ff6b7a;--green:#1a6e4a;--green-bg:#e8f5ef;
+  --amber:#b45309;--amber-bg:#fef3e2;--orange:#e65100;--orange-bg:#fff3e0;
+  --text:#0f1f45;--muted:#6b7a99;--border:#dce3f0;--surface:#fff;--bg:#f4f6fb;
+  --shadow:0 1px 3px rgba(26,63,160,.07),0 4px 14px rgba(26,63,160,.05);
+  --r:12px;--rs:9px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ─── LOCK SCREEN ─── */
+#lockScreen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:999;padding:20px}
+#lockScreen.hidden{display:none}
+.lock-card{background:#fff;border-radius:18px;padding:32px 28px;width:100%;max-width:340px;box-shadow:0 20px 50px rgba(0,0,0,.3);text-align:center}
+.lock-logo{font-family:'DM Serif Display',serif;font-size:28px;margin-bottom:4px}
+.lock-logo .c{color:var(--text)}.lock-logo .m{color:var(--pink)}
+.lock-sub{font-size:12px;color:var(--muted);margin-bottom:22px}
+.lock-field{text-align:left;margin-bottom:16px}
+.lock-field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:5px}
+.lock-field input{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;background:#f8f9fc;transition:border-color .2s,box-shadow .2s}
+.lock-field input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(26,63,160,.08)}
+.lock-err{background:var(--red-bg);border:1px solid #f5b8bf;border-radius:8px;padding:8px 12px;font-size:13px;color:var(--red);margin-bottom:12px;display:none}
+.lock-err.show{display:block}
+.btn-unlock{width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-unlock:hover{background:var(--red-mid)}
+
+/* ─── NAV ─── */
+nav{background:var(--blue);position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.ni{max-width:1200px;margin:0 auto;padding:0 20px;min-height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-.4px;text-decoration:none;flex-shrink:0}
+.logo .c{color:#fff}.logo .m{color:var(--pink)}
+.admin-badge{background:rgba(255,107,122,.2);border:1px solid rgba(255,107,122,.35);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700;color:var(--pink);letter-spacing:.06em}
+.nav-tabs{display:flex;gap:2px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.ntab{padding:6px 13px;border-radius:7px;font-size:13px;font-weight:500;color:rgba(255,255,255,.65);cursor:pointer;transition:background .15s,color .15s;border:none;background:none;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.ntab:hover{background:rgba(255,255,255,.1);color:#fff}
+.ntab.active{background:rgba(255,255,255,.15);color:#fff}
+.nav-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-lock{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:500;color:rgba(255,255,255,.8);cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.btn-lock:hover{background:rgba(255,255,255,.2)}
+.btn-lock svg{width:13px;height:13px;stroke:currentColor}
+/* Mobile: nav wraps into two rows — logo+badge on top, tabs+actions below */
+@media(max-width:640px){
+  .ni{padding:8px 14px;gap:6px}
+  .nav-top-row{display:flex;align-items:center;justify-content:space-between;width:100%;gap:8px}
+  .nav-bottom-row{display:flex;align-items:center;justify-content:space-between;width:100%;gap:6px;padding-bottom:6px}
+  .nav-tabs{flex:1;min-width:0}
+  .ntab{padding:5px 9px;font-size:11.5px}
+  .btn-lock{padding:5px 9px;font-size:11px}
+  /* Hide "Change PW" text label, keep icon only on small screens */
+  .btn-lock.btn-changepw span{display:none}
+}
+
+/* ─── MAIN ─── */
+main{max-width:1200px;margin:0 auto;padding:24px 20px 60px}
+.section{display:none}.section.active{display:block}
+
+/* ─── CARDS ─── */
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:16px}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.card-body{padding:16px 18px}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:20px}
+@media(max-width:700px){.stats-row{grid-template-columns:1fr 1fr}}
+.stat{background:var(--surface);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);border-top:3px solid var(--c)}
+.stat-lbl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.stat-val{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);letter-spacing:-.5px;line-height:1;margin-bottom:2px}
+.stat-sub{font-size:11px;color:var(--muted)}
+
+/* Table */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:600px}
+thead tr{background:var(--bg);border-bottom:1px solid var(--border)}
+th{text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .12s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg)}
+td{padding:11px 12px;font-size:13px;vertical-align:middle}
+.td-file{display:flex;align-items:center;gap:8px}
+.td-icon{width:30px;height:30px;background:var(--blue-bg);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.td-icon svg{width:13px;height:13px;stroke:var(--blue)}
+.td-name{font-weight:500;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.td-date{color:var(--muted);font-size:12px;white-space:nowrap}
+.td-email{color:var(--muted);font-size:12px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Status pills */
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:600;white-space:nowrap}
+.pd{width:4px;height:4px;border-radius:50%}
+.p-pending{background:var(--blue-bg);color:var(--muted)}.p-pending .pd{background:var(--muted)}
+.p-queued{background:var(--amber-bg);color:var(--amber)}.p-queued .pd{background:var(--amber);animation:pulse 1.4s ease-in-out infinite}
+.p-processing{background:var(--orange-bg);color:var(--orange)}.p-processing .pd{background:var(--orange);animation:pulse 1s ease-in-out infinite}
+.p-done{background:var(--green-bg);color:var(--green)}.p-done .pd{background:var(--green)}
+
+/* Action buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 13px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:background .15s,transform .1s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn svg{width:12px;height:12px;stroke:currentColor;fill:none}
+.btn-blue{background:var(--blue);color:#fff}.btn-blue:hover{background:var(--blue-mid)}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red-mid)}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#155a3c}
+.btn-outline{background:var(--surface);color:var(--blue);border:1.5px solid var(--border)}.btn-outline:hover{background:var(--blue-bg)}
+.btn-ghost{background:none;border:1.5px solid var(--border);color:var(--muted);border-radius:var(--rs);padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}.btn-ghost:hover{background:var(--bg)}
+
+/* Inline form elements */
+.fi{padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;background:#fff;transition:border-color .2s}
+.fi:focus{border-color:var(--blue)}
+select.fi{cursor:pointer}
+
+/* ─── FORM PANELS ─── */
+.form-panel{background:var(--surface);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);margin-bottom:20px}
+.fp-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:16px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;background:#f8f9fc;transition:border-color .2s,box-shadow .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(26,63,160,.08)}
+.field textarea{resize:vertical;min-height:80px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.field-row{grid-template-columns:1fr}}
+.field-hint{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* Token display */
+.tok-display{background:var(--blue-bg);border:1.5px solid #c2cff0;border-radius:10px;padding:16px;text-align:center}
+.tok-code{font-family:monospace;font-size:24px;font-weight:700;color:var(--blue);letter-spacing:.15em;margin-bottom:4px}
+.tok-meta{font-size:12px;color:var(--muted)}
+.tok-list-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:9px;margin-bottom:8px;transition:border-color .15s}
+.tok-list-item:hover{border-color:#b8c4de}
+.tok-code-small{font-family:monospace;font-size:13px;font-weight:700;color:var(--blue);flex:1}
+.tok-checks{font-size:12px;color:var(--muted);white-space:nowrap}
+.tok-used{background:var(--green-bg);color:var(--green);font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.tok-avail{background:var(--blue-bg);color:var(--muted);font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+
+/* Percentage input row */
+.pct-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pct-input-wrap{display:flex;align-items:center;gap:6px}
+.pct-input-wrap label{font-size:12px;color:var(--muted);white-space:nowrap}
+.pct-input{width:70px;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:'DM Serif Display',serif;font-size:16px;color:var(--text);text-align:center;outline:none;transition:border-color .2s}
+.pct-input:focus{border-color:var(--blue)}
+.pct-sym{font-size:14px;color:var(--muted)}
+
+/* File upload in admin */
+.admin-upload{border:2px dashed var(--border);border-radius:9px;padding:16px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;font-size:13px;color:var(--muted)}
+.admin-upload:hover{border-color:var(--blue);background:var(--blue-bg)}
+.admin-upload svg{width:20px;height:20px;stroke:var(--muted);margin:0 auto 6px;display:block}
+.admin-upload.has-file{border-style:solid;border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.admin-upload.drag-over{border-color:var(--blue);background:var(--blue-bg);transform:scale(1.01);}
+
+/* Reseller tag */
+.res-tag{display:inline-flex;align-items:center;gap:4px;background:var(--blue-bg);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--blue);font-weight:500}
+
+/* Toast */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9999;white-space:nowrap;max-width:calc(100vw - 32px);text-align:center}
+
+.upl-status-btn{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:5px 9px;border-radius:6px;border:none;font-weight:700;cursor:default}
+.upl-status-btn.uploading{background:var(--blue-bg);color:var(--blue)}
+.upl-status-btn.uploading svg{width:12px;height:12px;animation:spin 1s linear infinite}
+.upl-status-btn.done{background:#e7f9ef;color:#1a9d5c}
+.upl-status-btn.failed{background:#fdecec;color:var(--red);cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:16px;padding:26px;width:100%;max-width:460px;box-shadow:0 20px 50px rgba(0,0,0,.22);animation:up .25s ease both;max-height:90vh;overflow-y:auto}
+.modal-title{font-family:'DM Serif Display',serif;font-size:21px;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+
+@media(max-width:600px){main{padding:16px 14px 60px}.nav-tabs .ntab{padding:6px 10px;font-size:12px}}
+/* ─── STATUS BANNER ─── */
+#statusBanner{display:none;align-items:center;justify-content:space-between;gap:12px;padding:9px 20px;font-size:13px;font-weight:500;flex-wrap:wrap}
+#statusBanner.online{background:#dcfce7;color:#15803d;border-bottom:1px solid #bbf7d0}
+#statusBanner.offline{background:#fef2f2;color:#b91c1c;border-bottom:1px solid #fecaca}
+#statusBanner.show{display:flex}
+.sb-left{display:flex;align-items:center;gap:8px}
+.sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.online .sb-dot{background:#22c55e}
+.offline .sb-dot{background:#ef4444}
+.sb-toggle-wrap{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.sb-toggle-label{font-size:12px;font-weight:500}
+.sb-switch{position:relative;width:40px;height:22px;flex-shrink:0}
+.sb-switch input{opacity:0;width:0;height:0;position:absolute}
+.sb-slider{position:absolute;inset:0;background:#d1d5db;border-radius:999px;cursor:pointer;transition:background .2s}
+.sb-slider:before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
+.sb-switch input:checked + .sb-slider{background:#22c55e}
+.sb-switch input:checked + .sb-slider:before{transform:translateX(18px)}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-logo"><span class="c">Check</span><span class="m">Mate</span></div>
+    <div class="lock-sub">Admin Panel · Restricted Access</div>
+    <div class="lock-field">
+      <label>Admin Password</label>
+      <input type="password" id="lockPw" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')unlock()"/>
+    </div>
+    <div class="lock-err" id="lockErr">Incorrect password.</div>
+    <button class="btn-unlock" onclick="unlock()">Unlock Admin Panel</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="ni">
+    <!-- Row 1: Logo + Admin badge + Lock/Change PW buttons -->
+    <div class="nav-top-row">
+      <div style="display:flex;align-items:center;gap:10px">
+        <a class="logo" href="#"><span class="c">Check</span><span class="m">Mate</span></a>
+        <span class="admin-badge">ADMIN</span>
+      </div>
+      <div class="nav-r">
+        <button class="btn-lock btn-changepw" onclick="changeAdminPw()" title="Change admin password">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Change PW</span>
+        </button>
+        <button class="btn-lock" onclick="lock()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Lock
+        </button>
+      </div>
+    </div>
+    <!-- Row 2: Section tabs (scrollable) -->
+    <div class="nav-bottom-row">
+      <div class="nav-tabs">
+        <button class="ntab active" onclick="showSec('submissions',this)">Submissions</button>
+        <button class="ntab" onclick="showSec('reports',this)">Upload Reports</button>
+        <button class="ntab" onclick="showSec('tokens',this)">Tokens</button>
+        <button class="ntab" onclick="showSec('resellers',this)">Resellers</button>
+        <button class="ntab" onclick="showSec('workers',this)">Workers</button>
+        <button class="ntab" onclick="showSec('clients',this)">Clients</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── STATUS BANNER ─── -->
+<div id="statusBanner">
+  <div class="sb-left">
+    <div class="sb-dot"></div>
+    <span id="sbMsg"></span>
+  </div>
+  <div class="sb-toggle-wrap">
+    <span class="sb-toggle-label">Online</span>
+    <label class="sb-switch" title="Toggle online/offline status">
+      <input type="checkbox" id="sbToggle" onchange="toggleStatus(this.checked)">
+      <span class="sb-slider"></span>
+    </label>
+  </div>
+</div>
+
+<main>
+
+  <!-- ─── SUBMISSIONS ─── -->
+  <div class="section active" id="sec-submissions">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)">Worker Completions</div>
+      <button class="btn btn-red" onclick="resetWorkerTally()" style="font-size:11px;padding:5px 12px">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-3"/></svg>
+        Reset Tally
+      </button>
+    </div>
+    <div class="stats-row" id="tallyStats" style="margin-bottom:16px">
+      <div class="stat" style="--c:#1a6e4a"><div class="stat-lbl">Paid Submissions</div><div class="stat-val" id="sTally">—</div><div class="stat-sub" id="sTallySub">both reports submitted since last payout</div></div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)">Overview</div>
+    </div>
+    <div class="stats-row" id="adminStats">
+      <div class="stat" style="--c:#1a3fa0"><div class="stat-lbl">Total Submissions</div><div class="stat-val" id="sTot">—</div><div class="stat-sub">all time</div></div>
+      <div class="stat" style="--c:#b45309"><div class="stat-lbl">Pending / Queued</div><div class="stat-val" id="sPend">—</div><div class="stat-sub">need processing</div></div>
+      <div class="stat" style="--c:#e65100"><div class="stat-lbl">Processing</div><div class="stat-val" id="sProc">—</div><div class="stat-sub">in progress</div></div>
+      <div class="stat" style="--c:#1a6e4a"><div class="stat-lbl">Done</div><div class="stat-val" id="sDone">—</div><div class="stat-sub">completed</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">All Submissions</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <select class="fi" id="statusFilter" onchange="loadSubs()">
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="queued">Queued</option>
+            <option value="processing">Processing</option>
+            <option value="done">Done</option>
+          </select>
+          <button class="btn btn-outline" onclick="loadSubs()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-3"/></svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ref ID</th>
+              <th>Document</th>
+              <th>Reseller/Client</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Similarity</th>
+              <th>AI</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="subsTbody">
+            <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">Loading submissions…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── UPLOAD REPORTS ─── -->
+  <div class="section" id="sec-reports">
+
+    <!-- ROW 1: Queued (waiting) + Processing (selected) side by side -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+
+      <!-- QUEUED COLUMN -->
+      <div class="card" style="margin-bottom:0">
+        <div class="card-head">
+          <div class="card-title">Queued <span id="queuedCount" style="font-size:11px;background:var(--amber-bg);color:var(--amber);border-radius:999px;padding:2px 8px;font-weight:700;margin-left:6px">0</span></div>
+          <button class="btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="loadSubsForReports()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-3"/></svg>Refresh
+          </button>
+        </div>
+        <div id="queuedList" style="padding:8px 12px 12px;max-height:380px;overflow-y:auto">
+          <div style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Loading…</div>
+        </div>
+      </div>
+
+      <!-- PROCESSING COLUMN -->
+      <div class="card" style="margin-bottom:0">
+        <div class="card-head">
+          <div class="card-title">Processing <span id="processingCount" style="font-size:11px;background:var(--orange-bg);color:var(--orange);border-radius:999px;padding:2px 8px;font-weight:700;margin-left:6px">0</span></div>
+          <span style="font-size:11px;color:var(--muted)">Click to upload report</span>
+        </div>
+        <div id="processingList" style="padding:8px 12px 12px;max-height:380px;overflow-y:auto">
+          <div style="text-align:center;color:var(--muted);padding:24px;font-size:13px">None selected yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Upload report form (shown when a processing item is selected) -->
+    <div class="form-panel" id="rptFormPanel" style="display:none;animation:up .25s ease both">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <div class="fp-title" style="margin-bottom:0">Upload Report</div>
+        <div style="background:var(--blue-bg);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;color:var(--blue)" id="rptSubInfo">—</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Similarity % <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(0–100)</span></label>
+          <input type="number" id="simPct" min="0" max="100" placeholder="e.g. 12"/>
+        </div>
+        <div class="field">
+          <label>AI Detection % <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(0–100)</span></label>
+          <input type="number" id="aiPct" min="0" max="100" placeholder="e.g. 5"/>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Similarity Report PDF</label>
+          <div class="admin-upload" id="simDropzone"
+            onclick="document.getElementById('simFileIn').click()"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="event.preventDefault();this.classList.remove('drag-over');onAdminFileDrop(event.dataTransfer.files[0],'simDropzone','simFileLabel','sim')">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span id="simFileLabel">Click or drag Similarity PDF here</span>
+          </div>
+          <input type="file" id="simFileIn" accept=".pdf" style="display:none" onchange="onAdminFile(this,'simDropzone','simFileLabel','sim')"/>
+        </div>
+        <div class="field">
+          <label>AI Report PDF</label>
+          <div class="admin-upload" id="aiDropzone"
+            onclick="document.getElementById('aiFileIn').click()"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="event.preventDefault();this.classList.remove('drag-over');onAdminFileDrop(event.dataTransfer.files[0],'aiDropzone','aiFileLabel','ai')">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span id="aiFileLabel">Click or drag AI PDF here</span>
+          </div>
+          <input type="file" id="aiFileIn" accept=".pdf" style="display:none" onchange="onAdminFile(this,'aiDropzone','aiFileLabel','ai')"/>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn btn-ghost" onclick="cancelReport()" style="flex:1">Cancel</button>
+        <button class="btn btn-green" style="flex:2;padding:12px;font-size:14px" onclick="submitReport()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Submit Report &amp; Mark Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TOKENS ─── -->
+  <div class="section" id="sec-tokens">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>
+        <div class="form-panel">
+          <div class="fp-title">Generate New Token</div>
+          <div class="field">
+            <label>Number of Checks</label>
+            <input type="number" id="tokChecks" min="1" placeholder="e.g. 10" value="10"/>
+            <div class="field-hint">How many Turnitin checks this token grants</div>
+          </div>
+          <div class="field">
+            <label>Note / Label <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(optional)</span></label>
+            <input type="text" id="tokNote" placeholder="e.g. for John, batch April…"/>
+          </div>
+          <button class="btn btn-blue" style="width:100%;padding:12px;font-size:14px;margin-top:4px" onclick="createToken()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Generate Token
+          </button>
+        </div>
+
+        <!-- New token display -->
+        <div id="newTokDisplay" style="display:none;animation:up .3s ease both">
+          <div class="tok-display">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px">New Token</div>
+            <div class="tok-code" id="newTokCode">—</div>
+            <div class="tok-meta" id="newTokMeta">— checks · Copy and share this token</div>
+            <button class="btn btn-blue" style="margin-top:12px" onclick="cpText(document.getElementById('newTokCode').textContent)">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy Token
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:0">
+        <div class="card-head">
+          <div class="card-title">All Tokens</div>
+          <button class="btn btn-outline" onclick="loadTokens()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-3"/></svg>Refresh
+          </button>
+        </div>
+        <div class="card-body" id="tokensBody">
+          <div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">Loading tokens…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── RESELLERS ─── -->
+  <div class="section" id="sec-resellers">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+      <div class="form-panel" style="margin-bottom:0">
+        <div class="fp-title">Create Reseller Account</div>
+        <div class="field"><label>Full Name</label><input type="text" id="rName" placeholder="John Doe"/></div>
+        <div class="field"><label>Email</label><input type="email" id="rEmail" placeholder="john@example.com"/></div>
+        <div class="field"><label>Password</label><input type="password" id="rPw" placeholder="Set a password"/></div>
+        <div class="field">
+          <label>Account Type</label>
+          <select id="rType" class="fi" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;background:#f8f9fc;">
+            <option value="reseller">Reseller (can create client links, manage tokens)</option>
+            <option value="client">Client (can only submit documents)</option>
+          </select>
+        </div>
+        <div class="field"><label>Starting Checks</label><input type="number" id="rChecks" placeholder="e.g. 0" value="0" min="0"/></div>
+        <button class="btn btn-blue" style="width:100%;padding:12px;font-size:14px;margin-top:4px" onclick="createReseller()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Create Account
+        </button>
+      </div>
+
+      <div class="form-panel" style="margin-bottom:0">
+        <div class="fp-title">Manually Adjust Balance</div>
+        <div class="field"><label>Select Reseller</label>
+          <select id="adjReseller"><option value="">— Choose reseller —</option></select>
+        </div>
+        <div class="field"><label>Add / Remove Checks</label>
+          <div style="display:flex;gap:8px">
+            <input type="number" id="adjAmount" placeholder="e.g. 10 or -5" style="flex:1;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;background:#f8f9fc"/>
+            <button class="btn btn-blue" onclick="adjustBalance()">Apply</button>
+          </div>
+          <div class="field-hint">Use positive to add, negative to deduct</div>
+        </div>
+        <div style="background:var(--blue-bg);border-radius:8px;padding:10px 13px;font-size:13px;color:var(--muted)" id="adjCurrent">Select a reseller to see their current balance</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">All Resellers</div>
+        <button class="btn btn-outline" onclick="loadResellers()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-3"/></svg>Refresh
+        </button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Balance</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="resellersTbody"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-workers">
+    <div class="form-panel" style="max-width:420px;margin-bottom:20px">
+      <div class="fp-title">Create Worker Account</div>
+      <div class="field"><label>Full Name</label><input type="text" id="wName" placeholder="Jane Doe"/></div>
+      <div class="field"><label>Username</label><input type="text" id="wUsername" placeholder="e.g. jane01"/></div>
+      <div class="field"><label>Password</label><input type="password" id="wPw" placeholder="Set a password"/></div>
+      <div class="field-hint" style="margin-bottom:10px">They'll be required to set their own password on first sign-in.</div>
+      <button class="btn btn-blue" style="width:100%;padding:12px;font-size:14px" onclick="createWorker()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Create Account
+      </button>
+    </div>
+
+    <div class="form-panel" style="max-width:420px;margin-bottom:20px">
+      <div class="fp-title">Pay Rate</div>
+      <div class="field"><label>Price per check ($)</label><input type="number" min="0" step="0.01" id="priceInput" placeholder="e.g. 0.40"/></div>
+      <div class="field-hint" style="margin-bottom:10px">Applies to every submission a worker completes from now on — locked in per submission at the moment they finish it, so changing this never rewrites what's already been earned.</div>
+      <button class="btn btn-blue" style="width:100%;padding:12px;font-size:14px" onclick="savePricePerCheck()">Save Price</button>
+    </div>
+
+    <div class="form-panel" style="max-width:420px;margin-bottom:20px">
+      <div class="fp-title">Storage Cleanup</div>
+      <div class="field-hint" style="margin-bottom:10px">Runs the same file-deletion job that normally runs automatically every night at 3am — original documents 72h after a submission is done, and report PDFs 72h after the client downloads them (or after 14 days if never downloaded). This only removes files that are already eligible by those rules; it does not delete anything early.</div>
+      <button class="btn btn-red" id="cleanupBtn" style="width:100%;padding:12px;font-size:14px" onclick="runCleanupNow()">Run Cleanup Now</button>
+      <div id="cleanupResult" style="font-size:12.5px;color:var(--muted);margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">All Workers</div>
+        <button class="btn btn-outline" onclick="loadWorkers()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-3"/></svg>Refresh
+        </button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Username</th><th>Joined</th><th>Status</th><th>Claimed Now</th><th>Completed</th><th>Forfeited</th><th>Released</th><th>Earned ($)</th><th>Last Active</th><th>Actions</th></tr></thead>
+          <tbody id="workersTbody"><tr><td colspan="12" style="text-align:center;padding:24px;color:var(--muted)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-head">
+        <div class="card-title">Activity Log</div>
+        <button class="btn btn-outline" onclick="loadWorkers()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-3"/></svg>Refresh
+        </button>
+      </div>
+      <div class="field-hint" style="padding:0 14px 8px">Claims, releases, auto-forfeits, and completions — most recent 50, newest first.</div>
+      <div id="activityFeed" style="padding:0 14px 10px;max-height:420px;overflow-y:auto">
+        <div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-clients">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+      <div class="form-panel" style="margin-bottom:0">
+        <div class="fp-title">Create Client Account</div>
+        <div class="field"><label>Full Name</label><input type="text" id="cName" placeholder="Jane Doe"/></div>
+        <div class="field"><label>Email</label><input type="email" id="cEmail" placeholder="jane@example.com"/></div>
+        <div class="field"><label>Password</label><input type="password" id="cPw" placeholder="Set a password"/></div>
+        <div class="field"><label>Starting Checks</label><input type="number" id="cChecks" placeholder="e.g. 0" value="0" min="0"/></div>
+        <button class="btn btn-blue" style="width:100%;padding:12px;font-size:14px;margin-top:4px" onclick="createClient()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Create Client
+        </button>
+      </div>
+
+      <div class="form-panel" style="margin-bottom:0">
+        <div class="fp-title">Client Summary</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+          <div style="background:var(--blue-bg);border-radius:8px;padding:14px 16px;text-align:center">
+            <div style="font-size:28px;font-weight:700;color:var(--blue)" id="clientTotal">—</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Total Clients</div>
+          </div>
+          <div style="background:var(--blue-bg);border-radius:8px;padding:14px 16px;text-align:center">
+            <div style="font-size:28px;font-weight:700;color:#22c55e" id="clientActive">—</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Active</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">All Clients</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline" onclick="downloadClientsCsv()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download CSV
+          </button>
+          <button class="btn btn-outline" onclick="loadClients()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-3"/></svg>Refresh
+          </button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Email</th><th>Balance</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="clientsTbl"><tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Modal: edit submission status inline -->
+<div class="overlay" id="statusModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-title">Update Status</div>
+    <div class="modal-sub" id="statusModalSub">Change the processing status for this submission.</div>
+    <div class="field">
+      <label>New Status</label>
+      <select id="newStatusSel">
+        <option value="pending">Pending</option>
+        <option value="queued">Queued</option>
+        <option value="processing">Processing</option>
+        <option value="done">Done</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="document.getElementById('statusModal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-blue" onclick="confirmStatusChange()">Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: reset a reseller's password -->
+<div class="overlay" id="pwModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-title">Reset Password</div>
+    <div class="modal-sub" id="pwModalSub">Set a new password for this reseller.</div>
+    <div class="field">
+      <label>New Password</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="pwNewValue" class="fi" style="flex:1;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:monospace;font-size:14px;color:var(--text);outline:none;background:#f8f9fc" placeholder="Enter or generate a password"/>
+        <button class="btn btn-outline" onclick="genRandomPw()">Generate</button>
+      </div>
+      <div class="field-hint">At least 8 characters.</div>
+    </div>
+    <div class="field" style="display:flex;align-items:center;gap:8px">
+      <input type="checkbox" id="pwForceReset" checked style="width:16px;height:16px"/>
+      <label style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;font-weight:500" for="pwForceReset">Require them to set a new password on next login</label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="document.getElementById('pwModal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-blue" onclick="confirmResetPassword()">Reset Password</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = '/api/db';
+let ADMIN_TOKEN = sessionStorage.getItem('cm_admin_token') || null;
+let ALL_SUBS = [], ALL_RESELLERS = [], ALL_TOKENS = [], ALL_CLIENTS = [];
+let statusTargetId = null;
+let simFile = null, aiFile = null;
+
+/* ─── LOCK ─── */
+async function unlock(){
+  const pw = document.getElementById('lockPw').value;
+  try{
+    const r = await fetch('/api/auth?action=admin-login',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:pw})
+    });
+    const data = await r.json();
+    if(!r.ok || !data.ok){
+      document.getElementById('lockErr').classList.add('show');
+      document.getElementById('lockPw').value='';
+      return;
+    }
+    ADMIN_TOKEN = data.token;
+    sessionStorage.setItem('cm_admin_token', ADMIN_TOKEN);
+    document.getElementById('lockScreen').classList.add('hidden');
+    history.replaceState(null,'','/manage');
+    initAdmin();
+  }catch(e){
+    document.getElementById('lockErr').classList.add('show');
+  }
+}
+function lock(){ADMIN_TOKEN=null;sessionStorage.removeItem('cm_admin_token');document.getElementById('lockScreen').classList.remove('hidden');document.getElementById('lockPw').value='';}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!document.getElementById('lockScreen').classList.contains('hidden'))unlock();});
+/* ─── CLIENTS ─── */
+async function loadClients(){
+  try{
+    const rows2 = await dbGet('clients',{});
+    const rows=Array.isArray(rows2)?rows2:[];
+    ALL_CLIENTS=rows;
+    const totalEl=document.getElementById('clientTotal');
+    const activeEl=document.getElementById('clientActive');
+    if(totalEl) totalEl.textContent=rows.length;
+    if(activeEl) activeEl.textContent=rows.filter(r=>!r.revoked).length;
+    const tbody=document.getElementById('clientsTbl');
+    if(!tbody) return;
+    if(!rows.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted)">No clients yet.</td></tr>';return;}
+    tbody.innerHTML=rows.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(r=>`<tr>
+      <td><span style="font-family:monospace;font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-bg);padding:2px 7px;border-radius:5px">${r.id}</span></td>
+      <td><div class="td-file"><div class="td-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="td-name">${x(r.name)}</span></div></td>
+      <td class="td-email">${x(r.phone)||'—'}</td>
+      <td class="td-email">${x(r.email)}</td>
+      <td><span class="res-tag">${r.checks_balance||0} checks</span></td>
+      <td class="td-date">${fd(r.created_at)}</td>
+      <td>${r.revoked?'<span class="pill p-pending">Revoked</span>':'<span class="pill p-done">Active</span>'}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="topUpClient(${r.id},'${x(r.name)}',${r.checks_balance||0})">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adjust Balance
+        </button>
+        <button class="btn btn-outline" onclick="manageApiKey(${r.id},'${x(r.name)}',${r.api_enabled ? 'true' : 'false'})">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/></svg>${r.api_enabled ? 'Regenerate API Key' : 'Generate API Key'}
+        </button>
+        ${r.api_enabled ? `<button class="btn btn-red" onclick="revokeApiKey(${r.id},'${x(r.name)}')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Revoke API</button>` : ''}
+        ${!r.revoked?`<button class="btn btn-red" onclick="revokeClient(${r.id})"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Revoke</button>`:''}
+      </td>
+    </tr>`).join('');
+  }catch(e){
+    console.error('loadClients error:', e);
+    const tbody=document.getElementById('clientsTbl');
+    if(tbody) tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--red)">Error: ${e.message}</td></tr>`;
+    toast('Failed to load clients');
+  }
+}
+
+function downloadClientsCsv(){
+  const withPhone=ALL_CLIENTS.filter(c=>c.phone && String(c.phone).trim());
+  if(!withPhone.length){toast('No clients with a phone number to export');return;}
+  const esc=v=>{
+    const s=String(v==null?'':v);
+    return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+  };
+  const rows=[['Phone Number','First Name','Last Name']];
+  withPhone.slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).forEach(c=>{
+    const parts=String(c.name||'').trim().split(/\s+/);
+    const first=parts[0]||'';
+    const last=parts.slice(1).join(' ');
+    rows.push([String(c.phone||'').replace(/^\+/,''),first,last]);
+  });
+  const csv=rows.map(r=>r.map(esc).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`checkmate-clients-${new Date().toISOString().split('T')[0]}.csv`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast(`CSV downloaded (${withPhone.length} of ${ALL_CLIENTS.length} clients had a phone number)`);
+}
+
+async function createClient(){
+  const name=document.getElementById('cName').value.trim();
+  const email=document.getElementById('cEmail').value.trim();
+  const pw=document.getElementById('cPw').value;
+  const checks=parseInt(document.getElementById('cChecks').value)||0;
+  if(!name||!email||!pw){toast('Please fill in all fields');return;}
+  try{
+    const r=await fetch('/api/auth?action=admin-create',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({adminToken:ADMIN_TOKEN,role:'client',name,email,password:pw,checks})
+    });
+    const data=await r.json();
+    if(!r.ok||!data.ok)throw new Error(data.error||'unknown');
+    ['cName','cEmail','cPw'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('cChecks').value='0';
+    toast('✅ Client account created');
+    loadClients();
+  }catch(e){toast('Error creating client: '+(e.message||'unknown'));}
+}
+
+async function topUpClient(id,name,current){
+  const amt=prompt(`Adjust ${name}'s balance\nCurrent balance: ${current} checks\n\nEnter a number to add, or a negative number to deduct (e.g. -2):`);
+  if(amt===null)return;
+  const delta=parseInt(amt);
+  if(isNaN(delta)||delta===0){toast('Enter a non-zero whole number');return;}
+  const newBal=Math.max(0,current+delta);
+  try{
+    await dbPatch('clients','id',id,{checks_balance:newBal});
+    toast(delta>0?`✅ Added ${delta} checks to ${name}`:`✅ Deducted ${Math.min(-delta,current)} checks from ${name}`);
+    loadClients();
+  }catch(e){toast('Balance update failed');}
+}
+
+async function revokeClient(id){
+  if(!confirm('Revoke this client account? They will no longer be able to log in.'))return;
+  try{
+    await dbPatch('clients','id',id,{revoked:true});
+    toast('Client account revoked');
+    loadClients();
+  }catch(e){toast('Error revoking client');}
+}
+
+/* ─── CLIENT API KEYS ─── */
+async function manageApiKey(id,name,alreadyEnabled){
+  if(alreadyEnabled){
+    if(!confirm(`${name} already has an active API key.\n\nGenerate a NEW one? This immediately invalidates their current key — their integration will stop working until you send them the new one.`)) return;
+  }
+  try{
+    const r=await fetch('/api/auth?action=admin-generate-api-key',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({adminToken:ADMIN_TOKEN,clientId:id}),
+    });
+    const data=await r.json();
+    if(!r.ok||!data.ok){toast('Error: '+(data.error||'Could not generate key'));return;}
+    // Shown via prompt() (not alert()) so the value is selectable/copyable —
+    // this is the ONLY time the plaintext key is ever available anywhere.
+    prompt(`API key for ${name} — copy it now and send it to them. It will never be shown again:`, data.apiKey);
+    loadClients();
+  }catch(e){toast('Error generating API key');}
+}
+
+async function revokeApiKey(id,name){
+  if(!confirm(`Revoke ${name}'s API key? Their integration will stop working immediately — you can always generate a new one later.`)) return;
+  try{
+    const r=await fetch('/api/auth?action=admin-revoke-api-key',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({adminToken:ADMIN_TOKEN,clientId:id}),
+    });
+    const data=await r.json();
+    if(!r.ok||!data.ok){toast('Error: '+(data.error||'Could not revoke key'));return;}
+    toast('API key revoked');
+    loadClients();
+  }catch(e){toast('Error revoking API key');}
+}
+
+/* ─── CHANGE ADMIN PW ─── */
+function changeAdminPw(){
+  toast('Admin password is now set via the ADMIN_PANEL_PASSWORD environment variable on the server. Update it in your Vercel project settings, then redeploy.');
+}
+
+/* ─── IDLE LOGOUT 15 MIN ─── */
+let adminIdleTimer;
+function resetAdminIdle(){
+  clearTimeout(adminIdleTimer);
+  adminIdleTimer=setTimeout(()=>{lock();toast('Locked due to inactivity.');},15*60*1000);
+}
+['mousemove','keydown','click','touchstart'].forEach(e=>document.addEventListener(e,resetAdminIdle,{passive:true}));
+resetAdminIdle();
+
+/* ─── WORKER COMPLETIONS TALLY ───
+   Counts submissions where a worker has uploaded BOTH the plagiarism and AI
+   reports (submissions.completed_at is set — see api/db.js worker-submit-report)
+   since the last payout reset. The reset point itself lives server-side in the
+   settings table (key: worker_tally_reset_at) so it persists across devices
+   and browser sessions — not just this browser's sessionStorage. */
+const TALLY_RESET_KEY='worker_tally_reset_at';
+
+async function getTallyResetAt(){
+  const rows=await dbGet('settings',{key:TALLY_RESET_KEY});
+  if(Array.isArray(rows)&&rows.length) return rows[0].value;
+  return '1970-01-01T00:00:00.000Z';
+}
+
+async function loadWorkerTally(){
+  try{
+    const [resetAt,done]=await Promise.all([getTallyResetAt(),dbGet('submissions',{status:'done'})]);
+    const resetTime=new Date(resetAt).getTime();
+    const count=(done||[]).filter(s=>s.completed_at&&new Date(s.completed_at).getTime()>resetTime).length;
+    document.getElementById('sTally').textContent=count;
+    const since=new Date(resetAt);
+    document.getElementById('sTallySub').textContent = resetTime>0
+      ? `since ${since.toLocaleDateString()} ${since.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`
+      : 'both reports submitted since last payout';
+  }catch(e){console.warn('Tally load failed',e);}
+}
+
+async function resetWorkerTally(){
+  if(!confirm('Reset the worker completions tally to zero? Do this once you\'ve paid the worker for everything counted so far.'))return;
+  try{
+    const nowIso=new Date().toISOString();
+    const existing=await dbGet('settings',{key:TALLY_RESET_KEY});
+    if(Array.isArray(existing)&&existing.length) await dbPatch('settings','key',TALLY_RESET_KEY,{value:nowIso});
+    else await dbInsert('settings',{key:TALLY_RESET_KEY,value:nowIso});
+    await loadWorkerTally();
+    toast('Tally reset — counting from now');
+  }catch(e){toast('Could not reset the tally');}
+}
+
+/* ─── PRICE PER CHECK & PER-WORKER EARNINGS ───
+   The price is just another settings row (key: price_per_check). Workers
+   never see or touch this value directly — it's only ever read server-side,
+   at the exact moment a submission is completed, and snapshotted onto that
+   submission (submissions.pay_amount). So changing the price here only
+   affects work finished from this point on; nothing already completed is
+   rewritten, and nothing a worker sends can influence their own pay. */
+const PRICE_KEY='price_per_check';
+
+async function upsertSetting(key,value){
+  const existing=await dbGet('settings',{key});
+  if(Array.isArray(existing)&&existing.length) await dbPatch('settings','key',key,{value:String(value)});
+  else await dbInsert('settings',{key,value:String(value)});
+}
+
+async function loadPricePerCheck(){
+  try{
+    const rows=await dbGet('settings',{key:PRICE_KEY});
+    const val=Array.isArray(rows)&&rows.length?rows[0].value:'';
+    const el=document.getElementById('priceInput');
+    if(el&&document.activeElement!==el) el.value=val;
+  }catch(e){/* leave field as-is */}
+}
+
+async function savePricePerCheck(){
+  const el=document.getElementById('priceInput');
+  const val=Number(el.value);
+  if(!Number.isFinite(val)||val<0){toast('Enter a valid price (0 or more)');return;}
+  try{
+    await upsertSetting(PRICE_KEY,val);
+    toast(`Price per check set to $${val.toFixed(2)}`);
+  }catch(e){toast('Could not save the price');}
+}
+
+// A worker's own running total is: sum(pay_amount) for their completed
+// submissions where completed_at is after their own last_payout_at (NULL =
+// count everything). Marking paid only touches that one worker's row.
+function workerEarnedSince(w,subs){
+  const since=w.last_payout_at?new Date(w.last_payout_at).getTime():0;
+  return (subs||[])
+    .filter(s=>String(s.claimed_by)===String(w.id)&&s.status==='done'&&s.completed_at&&new Date(s.completed_at).getTime()>since)
+    .reduce((sum,s)=>sum+(Number(s.pay_amount)||0),0);
+}
+
+async function markWorkerPaid(workerId,name,amount){
+  if(!confirm(`Mark ${name} as paid $${amount.toFixed(2)} and reset their earnings counter to zero? This only affects ${name} — no one else's counter changes.`))return;
+  try{
+    await dbPatch('workers','id',workerId,{last_payout_at:new Date().toISOString()});
+    await loadWorkers();
+    toast(`${name} marked as paid — their counter is back to zero`);
+  }catch(e){toast('Could not update payout status');}
+}
+
+function renderCleanupErrors(data){
+  const samples=[...(data.docs.sampleErrors||[]),...(data.reports.sampleErrors||[])];
+  if(!samples.length)return'';
+  const rows=samples.map(s=>`<div style="margin-top:4px;padding:6px 8px;background:var(--red-bg,#fdeaea);border-radius:6px;font-family:monospace;font-size:11px;line-height:1.5">
+    submission #${s.submissionId}${s.status?` · HTTP ${s.status}`:''}${s.path?` · ${x(s.path)}`:''}<br>${x(String(s.body||'').slice(0,200))}
+  </div>`).join('');
+  return `<div style="margin-top:8px"><b>Sample failure details</b> (first few, for diagnosis):${rows}</div>`;
+}
+
+async function runCleanupNow(){
+  if(!confirm('Run the storage cleanup job right now? This deletes any files that are already old enough under the usual rules — same as the nightly job, just immediate.'))return;
+  const btn=document.getElementById('cleanupBtn');
+  const out=document.getElementById('cleanupResult');
+  btn.disabled=true;btn.textContent='Running…';out.textContent='';
+  try{
+    const r=await fetch('/api/cleanup-expired',{headers:{'x-admin-token':ADMIN_TOKEN||''}});
+    const data=await r.json();
+    if(!r.ok){out.textContent=`Failed: ${data.error||'unknown error'}`;toast('Cleanup failed');return;}
+    out.innerHTML=`Documents: ${data.docs.deleted} deleted (${data.docs.failed} failed). Reports: ${data.reports.deleted} deleted (${data.reports.failed} failed).`+renderCleanupErrors(data);
+    toast('Cleanup run complete');
+  }catch(e){
+    out.textContent='Could not reach the cleanup job.';
+    toast('Cleanup failed');
+  }finally{
+    btn.disabled=false;btn.textContent='Run Cleanup Now';
+  }
+}
+
+if(ADMIN_TOKEN){document.getElementById('lockScreen').classList.add('hidden');history.replaceState(null,'','/manage');initAdmin();}
+
+/* ─── SECTION NAV ─── */
+let subsPollTimer=null;
+function showSec(id,el){
+  if(id==='clients')loadClients();
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  if(id==='submissions'){loadSubs();startSubsPolling();} else {stopSubsPolling();}
+  if(id==='reports'){loadSubsForReports();populateRptSelect();}
+  if(id==='tokens')loadTokens();
+  if(id==='resellers')loadResellers();
+  if(id==='workers')loadWorkers();
+}
+
+/* ─── API ─── */
+async function dbGet(table,filters={}){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('table',table);u.searchParams.set('action','select');
+  u.searchParams.set('filters',JSON.stringify(filters));
+  const r=await fetch(u,{headers:{'x-admin-token':ADMIN_TOKEN||''}});if(!r.ok)throw new Error(await r.text());return r.json();
+}
+async function dbInsert(table,data){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('table',table);u.searchParams.set('action','insert');
+  const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json','x-admin-token':ADMIN_TOKEN||''},body:JSON.stringify(data)});
+  if(!r.ok)throw new Error(await r.text());return r.json();
+}
+async function dbPatch(table,key,val,data){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('table',table);u.searchParams.set('action','update');
+  u.searchParams.set('key',key);u.searchParams.set('val',val);
+  await fetch(u,{method:'POST',headers:{'Content-Type':'application/json','x-admin-token':ADMIN_TOKEN||''},body:JSON.stringify(data)});
+}
+function waitForOnline(){
+  if(navigator.onLine) return Promise.resolve();
+  return new Promise(res=>{
+    const h=()=>{window.removeEventListener('online',h);res();};
+    window.addEventListener('online',h);
+  });
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// Uploads a file to Supabase Storage via a freshly-requested signed URL,
+// retrying with a NEW signed URL each time (signed URLs are short-lived —
+// a slow connection can easily outlast one). Reports real progress via onProgress(pct).
+async function storageUpload(bucket,path,file,onProgress){
+  const MAX_ATTEMPTS=4;
+  const BACKOFF=[2000,5000,12000]; // ms between attempts
+  let lastErr=null;
+
+  for(let attempt=1;attempt<=MAX_ATTEMPTS;attempt++){
+    await waitForOnline(); // don't burn an attempt while definitely offline
+
+    try{
+      // 1. Ask the server (admin-only) for a FRESH signed direct-to-Supabase upload URL
+      const reqRes = await fetch(`${API}?action=admin-request-upload`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-admin-token':ADMIN_TOKEN||''},
+        body:JSON.stringify({bucket,path})
+      });
+      const reqData = await reqRes.json();
+      if(!reqRes.ok) throw new Error(reqData.error||'Could not start upload');
+
+      // 2. Upload the file bytes straight to Supabase Storage via XHR (gives us real progress events)
+      await new Promise((resolve,reject)=>{
+        const xhr=new XMLHttpRequest();
+        xhr.open('PUT',reqData.uploadUrl);
+        xhr.setRequestHeader('apikey',reqData.anonKey);
+        xhr.setRequestHeader('Authorization','Bearer '+reqData.anonKey);
+        xhr.setRequestHeader('Content-Type',file.type||'application/pdf');
+
+        // Stall watchdog: a slow connection that's still MAKING progress should
+        // never be killed early — only abort if no progress event arrives for a
+        // while, meaning the transfer has genuinely frozen (not just slow).
+        let stallTimer=null;
+        const STALL_MS=30000;
+        const resetStallTimer=()=>{
+          clearTimeout(stallTimer);
+          stallTimer=setTimeout(()=>{xhr.abort();},STALL_MS);
+        };
+        resetStallTimer();
+
+        xhr.upload.onprogress=(e)=>{
+          resetStallTimer();
+          if(e.lengthComputable&&onProgress) onProgress(Math.round((e.loaded/e.total)*100));
+        };
+        xhr.onload=()=>{
+          clearTimeout(stallTimer);
+          if(xhr.status>=200&&xhr.status<300) resolve();
+          else reject(new Error(`Upload rejected (${xhr.status}). The link may have expired.`));
+        };
+        xhr.onerror=()=>{clearTimeout(stallTimer);reject(new Error('Connection lost during upload'));};
+        xhr.onabort=()=>{reject(new Error('Upload stalled — no progress for 30s'));};
+        xhr.send(file);
+      });
+
+      return `${bucket}::${reqData.path}`; // success
+    }catch(e){
+      lastErr=e;
+      if(attempt<MAX_ATTEMPTS){
+        if(onProgress) onProgress(0); // reset bar before the next attempt
+        await sleep(BACKOFF[attempt-1]);
+      }
+    }
+  }
+  throw new Error((lastErr&&lastErr.message||'Upload failed')+` — gave up after ${MAX_ATTEMPTS} attempts`);
+}
+async function dlFile(ref,fname,subId){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('action','download');u.searchParams.set('ref',ref);u.searchParams.set('name',fname);
+  const r=await fetch(u);if(!r.ok){toast('Download failed');return;}
+  const blob=await r.blob();const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=fname;a.target='_blank';
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);
+  /* Auto-set status to processing when admin downloads the document */
+  if(subId){
+    const sub=ALL_SUBS.find(s=>s.id===subId);
+    if(sub&&(sub.status==='pending'||sub.status==='queued')){
+      await dbPatch('submissions','id',subId,{status:'processing'});
+      await loadSubs();
+      toast('📥 Downloaded — status set to Processing');
+    }
+  }
+}
+
+/* ─── INIT ─── */
+async function initAdmin(){
+  await Promise.all([loadResellers(),loadClients(),loadTokens(),loadStatus(),loadWorkers()]);
+  await loadSubs();
+  startSubsPolling(); // Submissions is the default tab shown on load
+}
+
+function startSubsPolling(){
+  clearInterval(subsPollTimer);
+  subsPollTimer=setInterval(()=>{
+    // Only poll while the tab is actually visible — no point refetching in the background.
+    if(document.getElementById('sec-submissions')?.classList.contains('active')) loadSubs();
+  },8000);
+}
+function stopSubsPolling(){clearInterval(subsPollTimer);}
+
+/* ─── SUBMISSIONS ─── */
+async function loadSubs(){
+  try {
+    const filter=document.getElementById('statusFilter')?.value;
+    const data=await dbGet('submissions',filter?{status:filter}:{});
+    ALL_SUBS=(data||[]).sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
+    renderSubsTable();
+    renderStats();
+    loadWorkerTally();
+  } catch(e){toast('Error loading submissions');}
+}
+
+function renderStats(){
+  document.getElementById('sTot').textContent=ALL_SUBS.length;
+  document.getElementById('sPend').textContent=ALL_SUBS.filter(s=>s.status==='pending'||s.status==='queued').length;
+  document.getElementById('sProc').textContent=ALL_SUBS.filter(s=>s.status==='processing').length;
+  document.getElementById('sDone').textContent=ALL_SUBS.filter(s=>s.status==='done').length;
+}
+
+function renderSubsTable(){
+  const tb=document.getElementById('subsTbody');
+  if(!ALL_SUBS.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">No submissions found</td></tr>';return;}
+  tb.innerHTML=ALL_SUBS.map(s=>{
+    const source=submissionSourceHtml(s);
+    const simBtn=s.similarity_pct!==null&&s.similarity_pct!==undefined?`<span style="font-family:'DM Serif Display',serif;font-size:15px;color:#bf360c">${s.similarity_pct}%</span>`:'<span style="color:var(--muted)">—</span>';
+    const aiBtn=s.ai_pct!==null&&s.ai_pct!==undefined?`<span style="font-family:'DM Serif Display',serif;font-size:15px;color:#283593">${s.ai_pct}%</span>`:'<span style="color:var(--muted)">—</span>';
+    const ref=s.file_url?`submissions::${s.file_url}`:'';
+    const refId=refCode(s.id);
+    return `<tr>
+      <td><span style="font-family:monospace;font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-bg);padding:2px 7px;border-radius:5px">${refId}</span></td>
+      <td><div class="td-file"><div class="td-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span class="td-name">${x(s.file_name)}</span></div></td>
+      <td>${source}</td>
+      <td class="td-date">${fd(s.submitted_at)}</td>
+      <td>${statusPill(s.status)}</td>
+      <td>${simBtn}</td>
+      <td>${aiBtn}</td>
+      <td><div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${s.expired?`<span style="font-size:11px;color:var(--muted);font-style:italic">File expired (72h)</span>`:ref?`<button class="btn btn-outline" onclick="dlFile('${ref}','${x(s.file_name)}',${s.id})"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>Download</button>`:''}
+        <button class="btn btn-blue" onclick="openStatusModal(${s.id},'${s.status}')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 16 14"/></svg>Status</button>
+        <button class="btn btn-green" onclick="openReportTab(${s.id})"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/></svg>Reports</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// Resolves who actually submitted a file — client, reseller, or a reseller-issued
+// token link — always showing the underlying numeric ID (or token) so admin can
+// trace a submission back to an exact account, even if names collide or change.
+function submissionSourceHtml(s){
+  if(s.client_id){
+    const c=ALL_CLIENTS.find(c=>c.id===s.client_id);
+    return `<span class="res-tag" title="Client ID ${s.client_id}">${x(c?.name||c?.email||'Unknown client')} <span style="opacity:.6;font-family:monospace">#${s.client_id}</span></span>`;
+  }
+  if(s.reseller_id){
+    const r=ALL_RESELLERS.find(r=>r.id===s.reseller_id);
+    return `<span class="res-tag" title="Reseller ID ${s.reseller_id}">${x(r?.name||r?.email||'Unknown reseller')} <span style="opacity:.6;font-family:monospace">#${s.reseller_id}</span></span>`;
+  }
+  if(s.user_token){
+    return `<span class="res-tag" title="Client-link token" style="font-family:monospace;font-size:11px">🔗 ${x(s.user_token)}</span>`;
+  }
+  return '<span style="color:var(--muted)">—</span>';
+}
+
+/* ─── STATUS MODAL ─── */
+function openStatusModal(id,current){
+  statusTargetId=id;
+  document.getElementById('statusModalSub').textContent=`Submission #${id} · Current: ${current}`;
+  document.getElementById('newStatusSel').value=current;
+  document.getElementById('statusModal').classList.add('open');
+}
+async function confirmStatusChange(){
+  const newSt=document.getElementById('newStatusSel').value;
+  try{await dbPatch('submissions','id',statusTargetId,{status:newSt});await loadSubs();toast('Status updated');document.getElementById('statusModal').classList.remove('open');}
+  catch(e){toast('Error: '+e.message);}
+}
+
+/* ─── REPORTS TAB ─── */
+function openReportTab(subId){
+  showSec('reports',document.querySelectorAll('.ntab')[1]);
+}
+
+let rptActiveId=null;
+
+async function loadSubsForReports(){
+  try{
+    const data=await dbGet('submissions',{});
+    ALL_SUBS=(data||[]).sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
+    renderQueuedList();
+    renderProcessingList();
+  }catch(e){toast('Error loading submissions');}
+}
+
+function renderQueuedList(){
+  const queued=ALL_SUBS.filter(s=>s.status==='queued');
+  document.getElementById('queuedCount').textContent=queued.length;
+  const el=document.getElementById('queuedList');
+  if(!queued.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:24px;font-size:13px">No queued submissions</div>';return;}
+  el.innerHTML=queued.map(s=>{
+    const refId=refCode(s.id);
+    const ref=s.file_url?`submissions::${s.file_url}`:'';
+    return `<div style="border:1px solid var(--border);border-radius:9px;padding:11px 13px;margin-bottom:8px;background:#fff">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">
+        <div>
+          <div style="font-size:11px;font-family:monospace;font-weight:700;color:var(--blue);background:var(--blue-bg);padding:1px 7px;border-radius:4px;display:inline-block;margin-bottom:4px">${refId}</div>
+          <div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px">${x(s.file_name)}</div>
+          <div style="margin:3px 0">${submissionSourceHtml(s)}</div>
+          <div style="font-size:11px;color:var(--muted)">${fd(s.submitted_at)}</div>
+        </div>
+        ${statusPill(s.status)}
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${s.expired?`<span style="font-size:11px;color:var(--muted);font-style:italic">File expired (72h)</span>`:ref?`<button class="btn btn-outline" style="font-size:11px;padding:5px 9px" onclick="dlFile('${ref}','${x(s.file_name)}',${s.id})"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>Download</button>`:''}
+        <button class="btn btn-blue" style="font-size:11px;padding:5px 9px" onclick="moveToProcessing(${s.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>Move to Processing
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderProcessingList(){
+  const procIds=new Set(ALL_SUBS.filter(s=>s.status==='processing').map(s=>s.id));
+  uploadQueue.forEach(q=>procIds.add(q.subId)); // keep a just-finished row visible until its "Done" flash clears
+  const proc=[...procIds].map(id=>ALL_SUBS.find(s=>s.id===id)).filter(Boolean);
+  document.getElementById('processingCount').textContent=ALL_SUBS.filter(s=>s.status==='processing').length;
+  const el=document.getElementById('processingList');
+  if(!proc.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:24px;font-size:13px">No items in processing</div>';return;}
+  el.innerHTML=proc.map(s=>{
+    const refId=refCode(s.id);
+    const isActive=rptActiveId===s.id;
+    const q=uploadQueue.find(q=>q.subId===s.id);
+    const claimedByWorker=s.claimed_by?(ALL_WORKERS.find(w=>w.id===s.claimed_by)||{}).name||`worker #${s.claimed_by}`:null;
+    const blockedByClaim=!!claimedByWorker && !isActive;
+    // Server auto-releases a stale claim after 14 minutes — flag it here from
+    // 8 minutes so you can see it's running long before it actually forfeits.
+    const claimedMinsAgo=s.claimed_at?(Date.now()-new Date(s.claimed_at).getTime())/60000:0;
+    const isDelayed=blockedByClaim&&claimedMinsAgo>=8;
+    let footer;
+    if(q&&q.status==='uploading'){
+      const pcts=[q.pctSim,q.pctAi].filter(p=>p!=null);
+      const pctTxt=pcts.length?` ${Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length)}%`:'';
+      footer=`<button class="upl-status-btn uploading"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>Uploading…${pctTxt}</button>`;
+    } else if(q&&q.status==='queued'){
+      footer=`<button class="upl-status-btn uploading">Waiting…</button>`;
+    } else if(q&&q.status==='done'){
+      footer=`<button class="upl-status-btn done"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Done</button>`;
+    } else if(q&&q.status==='failed'){
+      footer=`<button class="upl-status-btn failed" onclick="event.stopPropagation();retryQueueItem(${q.qid})">⚠ Failed — Tap to retry</button>`;
+    } else if(blockedByClaim){
+      footer=`<div style="font-size:11px;color:var(--orange);font-weight:600">🔒 Claimed by ${x(claimedByWorker)}${isDelayed?' <span style="color:var(--red)">· ⏱ Delayed</span>':''}</div>`;
+    } else {
+      footer=`<div style="font-size:11px;color:${isActive?'var(--blue)':'var(--muted)'};font-weight:${isActive?'600':'400'}">${isActive?'✓ Selected — upload report below':'Click to upload report'}</div>`;
+    }
+    const inFlight=(q&&(q.status==='queued'||q.status==='uploading'))||blockedByClaim;
+    return `<div style="border:1.5px solid ${isActive?'var(--blue)':'var(--border)'};border-radius:9px;padding:11px 13px;margin-bottom:8px;background:${isActive?'var(--blue-bg)':'#fff'};cursor:${inFlight?'default':'pointer'};transition:all .15s" onclick="${inFlight?`event.stopPropagation();toast('${blockedByClaim?'A worker already has this one':'Still uploading — hang tight'}')`:`selectForReport(${s.id})`}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">
+        <div>
+          <div style="font-size:11px;font-family:monospace;font-weight:700;color:var(--orange);background:var(--orange-bg);padding:1px 7px;border-radius:4px;display:inline-block;margin-bottom:4px">${refId}</div>
+          <div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px">${x(s.file_name)}</div>
+          <div style="margin:3px 0">${submissionSourceHtml(s)}</div>
+          <div style="font-size:11px;color:var(--muted)">${fd(s.submitted_at)}</div>
+        </div>
+        ${statusPill(s.status)}
+      </div>
+      ${footer}
+    </div>`;
+  }).join('');
+}
+
+async function moveToProcessing(id){
+  try{
+    await dbPatch('submissions','id',id,{status:'processing'});
+    const s=ALL_SUBS.find(s=>s.id===id);
+    if(s)s.status='processing';
+    renderQueuedList();
+    renderProcessingList();
+    toast('Moved to Processing');
+  }catch(e){toast('Error: '+e.message);}
+}
+
+function selectForReport(id){
+  rptActiveId=id;
+  const s=ALL_SUBS.find(s=>s.id===id);
+  if(!s)return;
+  const refId=refCode(s.id);
+  document.getElementById('rptFormPanel').style.display='block';
+  document.getElementById('rptSubInfo').textContent=`${refId} · ${s.file_name}`;
+  document.getElementById('simPct').value=s.similarity_pct!=null?s.similarity_pct:'';
+  document.getElementById('aiPct').value=s.ai_pct!=null?s.ai_pct:'';
+  simFile=null;aiFile=null;
+  document.getElementById('simFileIn').value='';
+  document.getElementById('aiFileIn').value='';
+  document.getElementById('simDropzone').className='admin-upload';
+  document.getElementById('simFileLabel').textContent='Click or drag Similarity PDF here';
+  document.getElementById('aiDropzone').className='admin-upload';
+  document.getElementById('aiFileLabel').textContent='Click or drag AI PDF here';
+  renderProcessingList();
+  document.getElementById('rptFormPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function cancelReport(){
+  rptActiveId=null;
+  document.getElementById('rptFormPanel').style.display='none';
+  renderProcessingList();
+}
+
+/* legacy — keep for openReportTab compatibility */
+async function populateRptSelect(){}
+function onRptSubChange(){}
+
+function onAdminFile(inp,dzId,lblId,type){
+  const f=inp.files[0];if(!f)return;
+  inp.value=''; // reset so same file can be re-selected
+  if(type==='sim')simFile=f;else aiFile=f;
+  document.getElementById(dzId).className='admin-upload has-file';
+  document.getElementById(lblId).textContent='✅ '+f.name;
+}
+function onAdminFileDrop(f,dzId,lblId,type){
+  if(!f||f.type!=='application/pdf'){toast('Please drop a PDF file');return;}
+  if(type==='sim')simFile=f;else aiFile=f;
+  document.getElementById(dzId).className='admin-upload has-file';
+  document.getElementById(lblId).textContent='✅ '+f.name;
+}
+
+/* ─── BACKGROUND REPORT UPLOAD QUEUE ─── */
+let uploadQueue=[]; // {qid, subId, refLabel, simFile, aiFile, simPct, aiPct, status, error, pctSim, pctAi}
+let qidCounter=0;
+
+function isSubQueuedOrUploading(subId){
+  return uploadQueue.some(q=>q.subId===subId&&(q.status==='queued'||q.status==='uploading'));
+}
+
+async function processQueueItem(item){
+  item.status='uploading';item.pctSim=item.simFile?0:null;item.pctAi=item.aiFile?0:null;renderProcessingList();
+  try{
+    const [simRef, aiRef] = await Promise.all([
+      item.simFile ? storageUpload('reports',`sim_${item.subId}_${Date.now()}.pdf`,item.simFile,p=>{item.pctSim=p;renderProcessingList();}) : Promise.resolve(null),
+      item.aiFile  ? storageUpload('reports',`ai_${item.subId}_${Date.now()}.pdf`,item.aiFile,p=>{item.pctAi=p;renderProcessingList();})  : Promise.resolve(null),
+    ]);
+    const update={status:'done',similarity_pct:item.simPct,ai_pct:item.aiPct};
+    if(simRef) update.report1_url=simRef;
+    if(aiRef)  update.report2_url=aiRef;
+    await dbPatch('submissions','id',item.subId,update);
+    const s=ALL_SUBS.find(s=>s.id===item.subId);
+    if(s){Object.assign(s,update);}
+    item.status='done';
+    renderQueuedList();renderProcessingList();
+    toast(`✅ Report uploaded — ${item.refLabel}`);
+    // Let the row show "Done" for a moment before it drops out of Processing
+    setTimeout(()=>{uploadQueue=uploadQueue.filter(q=>q.qid!==item.qid);renderProcessingList();},3000);
+  }catch(e){
+    item.status='failed';item.error=e.message||'Upload failed';renderProcessingList();
+    toast(`❌ Upload failed — ${item.refLabel}`);
+  }
+}
+function retryQueueItem(qid){
+  const item=uploadQueue.find(q=>q.qid===qid);
+  if(item) processQueueItem(item);
+}
+
+async function submitReport(){
+  const id=rptActiveId;
+  if(!id){toast('Select a submission from Processing first');return;}
+  if(isSubQueuedOrUploading(id)){toast('This submission is already uploading — hang tight');return;}
+  const s=ALL_SUBS.find(s=>s.id===id);
+  const refLabel=s?`${refCode(s.id)} · ${s.file_name}`:`Submission #${id}`;
+  const simPct=document.getElementById('simPct').value!==''?parseInt(document.getElementById('simPct').value):null;
+  const aiPctVal=document.getElementById('aiPct').value!==''?parseInt(document.getElementById('aiPct').value):null;
+  if(!simFile&&!aiFile&&simPct===null&&aiPctVal===null){toast('Add a report file or a score before sending');return;}
+
+  // Capture everything for this submission, then immediately free up the form
+  // so the admin can move straight on to the next one — upload runs in the background.
+  const item={qid:++qidCounter,subId:id,refLabel,simFile,aiFile,simPct,aiPct:aiPctVal,status:'queued',error:null};
+  uploadQueue.push(item);
+
+  rptActiveId=null;
+  document.getElementById('rptFormPanel').style.display='none';
+  simFile=null;aiFile=null;
+  document.getElementById('simFileIn').value='';
+  document.getElementById('aiFileIn').value='';
+  renderQueuedList();
+  renderProcessingList();
+  toast('📤 Sending in the background — pick your next file');
+
+  processQueueItem(item); // fire and forget — UI already moved on
+}
+
+/* ─── TOKENS ─── */
+async function loadTokens(){
+  try {
+    const data=await dbGet('access_tokens',{});
+    ALL_TOKENS=(data||[]).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+    const el=document.getElementById('tokensBody');
+    if(!ALL_TOKENS.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No tokens yet</div>';return;}
+    el.innerHTML=ALL_TOKENS.map(t=>`
+      <div class="tok-list-item">
+        <div>
+          <div class="tok-code-small">${t.code}</div>
+          ${t.note?`<div style="font-size:11px;color:var(--muted);margin-top:1px">${x(t.note)}</div>`:''}
+        </div>
+        <span class="tok-checks">${t.checks} checks</span>
+        <span class="${t.used?'tok-used':'tok-avail'}">${t.used?'Used':'Available'}</span>
+        <button class="btn btn-outline" onclick="cpText('${t.code}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+      </div>`).join('');
+  } catch(e){toast('Error loading tokens');}
+}
+
+async function createToken(){
+  const checks=parseInt(document.getElementById('tokChecks').value)||0;
+  if(!checks){toast('Enter number of checks');return;}
+  const note=document.getElementById('tokNote').value.trim();
+  const code='CM-'+Math.random().toString(36).substr(2,4).toUpperCase()+'-'+Math.random().toString(36).substr(2,4).toUpperCase();
+  try {
+    await dbInsert('access_tokens',{code,checks,note:note||null,used:false,created_at:new Date().toISOString()});
+    document.getElementById('newTokCode').textContent=code;
+    document.getElementById('newTokMeta').textContent=`${checks} check${checks>1?'s':''} · Copy and share`;
+    document.getElementById('newTokDisplay').style.display='block';
+    document.getElementById('tokNote').value='';
+    await loadTokens();
+    toast('✅ Token created: '+code);
+  } catch(e){toast('Error: '+e.message);}
+}
+
+/* ─── RESELLERS ─── */
+async function loadResellers(){
+  try {
+    const data=await dbGet('resellers',{});
+    ALL_RESELLERS=(data||[]).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+    const tb=document.getElementById('resellersTbody');
+    if(!ALL_RESELLERS.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">No resellers yet</td></tr>';return;}
+    tb.innerHTML=ALL_RESELLERS.map(r=>`<tr>
+      <td><span style="font-family:monospace;font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-bg);padding:2px 7px;border-radius:5px">${r.id}</span></td>
+      <td style="font-weight:600">${x(r.name||'—')}</td>
+      <td class="td-email">${x(r.email)}</td>
+      <td><span style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--blue)">${r.checks_balance||0}</span></td>
+      <td class="td-date">${fd(r.created_at)}</td>
+      <td>${r.revoked?'<span class="pill p-done" style="background:var(--red-bg);color:var(--red)"><span class="pd" style="background:var(--red)"></span>Suspended</span>':'<span class="pill p-done"><span class="pd"></span>Active</span>'}</td>
+      <td><div style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="quickAdjust(${r.id},'${x(r.name||r.email)}',${r.checks_balance||0})">Adjust</button>
+        <button class="btn btn-outline" onclick="openResetPwModal(${r.id},'${x(r.name||r.email)}')">Reset Password</button>
+        ${!r.revoked?`<button class="btn btn-red" onclick="suspendReseller(${r.id},'${x(r.name||r.email)}')">Suspend</button>`:'<button class="btn btn-green" onclick="restoreReseller('+r.id+')">Restore</button>'}
+      </div></td>
+    </tr>`).join('');
+    /* Populate adj dropdown */
+    const sel=document.getElementById('adjReseller');
+    sel.innerHTML='<option value="">— Choose reseller —</option>'+ALL_RESELLERS.map(r=>`<option value="${r.id}">${x(r.name||r.email)} (${r.checks_balance||0} checks)</option>`).join('');
+    sel.onchange=()=>{const r=ALL_RESELLERS.find(x=>x.id===parseInt(sel.value));document.getElementById('adjCurrent').textContent=r?`Current balance: ${r.checks_balance||0} checks`:'Select a reseller';}
+  } catch(e){toast('Error loading resellers');}
+}
+
+let ALL_WORKERS=[];
+let ALL_EVENTS=[];
+async function loadWorkers(){
+  try {
+    // Pull workers + a fresh, unfiltered view of submissions + the activity
+    // log in parallel so the activity columns (Claimed Now / Completed /
+    // Forfeited / Released / Earned / Last Active) are accurate regardless
+    // of whatever status filter the Submissions tab currently has.
+    const [data,subs,events]=await Promise.all([dbGet('workers',{}),dbGet('submissions',{}),dbGet('submission_events',{})]);
+    ALL_WORKERS=(data||[]).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+    ALL_EVENTS=(events||[]).sort((a,b)=>new Date(b.at||0)-new Date(a.at||0));
+    loadPricePerCheck();
+    const tb=document.getElementById('workersTbody');
+    if(!ALL_WORKERS.length){tb.innerHTML='<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--muted)">No workers yet</td></tr>';return;}
+
+    const bySubs=(w)=>(subs||[]).filter(s=>String(s.claimed_by)===String(w.id));
+    const byEvents=(w,ev)=>ALL_EVENTS.filter(e=>String(e.worker_id)===String(w.id)&&e.event===ev);
+
+    tb.innerHTML=ALL_WORKERS.map(w=>{
+      const mine=bySubs(w);
+      const claimedNow=mine.filter(s=>s.status==='processing').length;
+      const completed=mine.filter(s=>s.status==='done'&&s.completed_at).length;
+      const forfeited=byEvents(w,'forfeited').length;
+      const released=byEvents(w,'released').length;
+      const earned=workerEarnedSince(w,subs);
+      const workerEvents=ALL_EVENTS.filter(e=>String(e.worker_id)===String(w.id));
+      const lastActive=workerEvents.length?new Date(workerEvents[0].at):null; // ALL_EVENTS is already sorted newest-first
+      return `<tr>
+      <td><span style="font-family:monospace;font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-bg);padding:2px 7px;border-radius:5px">${w.id}</span></td>
+      <td style="font-weight:600">${x(w.name||'—')}</td>
+      <td class="td-email">${x(w.username)}</td>
+      <td class="td-date">${fd(w.created_at)}</td>
+      <td>${w.active===false?'<span class="pill p-done" style="background:var(--red-bg);color:var(--red)"><span class="pd" style="background:var(--red)"></span>Inactive</span>':'<span class="pill p-done"><span class="pd"></span>Active</span>'}</td>
+      <td style="text-align:center">${claimedNow?`<span class="pill p-done" style="background:var(--blue-bg);color:var(--blue)"><span class="pd" style="background:var(--blue)"></span>${claimedNow}</span>`:'<span style="color:var(--muted)">0</span>'}</td>
+      <td style="text-align:center;font-weight:600;color:var(--green,#1a6e4a)">${completed}</td>
+      <td style="text-align:center;${forfeited?'color:var(--red);font-weight:600':'color:var(--muted)'}">${forfeited}</td>
+      <td style="text-align:center;${released?'color:var(--orange);font-weight:600':'color:var(--muted)'}">${released}</td>
+      <td style="text-align:center;font-family:'DM Serif Display',serif;font-size:15px;${earned?'color:var(--navy)':'color:var(--muted)'}">$${earned.toFixed(2)}</td>
+      <td class="td-date">${lastActive?fd(lastActive):'—'}</td>
+      <td><div style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="openResetPwModal(${w.id},'${x(w.name||w.username)}','worker')">Reset Password</button>
+        ${w.active!==false?`<button class="btn btn-red" onclick="toggleWorkerActive(${w.id},false,'${x(w.name||w.username)}')">Deactivate</button>`:`<button class="btn btn-green" onclick="toggleWorkerActive(${w.id},true,'${x(w.name||w.username)}')">Reactivate</button>`}
+        ${earned?`<button class="btn btn-green" onclick="markWorkerPaid(${w.id},'${x(w.name||w.username)}',${earned})">Mark Paid</button>`:''}
+      </div></td>
+    </tr>`;
+    }).join('');
+
+    renderActivityFeed(subs);
+  } catch(e){toast('Error loading workers');}
+}
+
+// Recent claim/release/forfeit/completion history across all workers, newest
+// first — the "what actually happened" view that the summary counts above
+// don't show on their own.
+function renderActivityFeed(subs){
+  const el=document.getElementById('activityFeed');
+  if(!el)return;
+  if(!ALL_EVENTS.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No activity yet</div>';return;}
+  const ICONS={claimed:'📥',released:'↩️',forfeited:'⏱️',completed:'✅'};
+  const LABELS={claimed:'claimed',released:'released back to queue',forfeited:'forfeited (auto-released — sat too long)',completed:'completed'};
+  el.innerHTML=ALL_EVENTS.slice(0,50).map(e=>{
+    const w=ALL_WORKERS.find(w=>String(w.id)===String(e.worker_id));
+    const s=(subs||[]).find(s=>String(s.id)===String(e.submission_id));
+    const who=w?x(w.name||w.username):`worker #${e.worker_id}`;
+    const what=s?x(s.file_name||`#${refCode(s.id)}`):`submission #${e.submission_id}`;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--border);font-size:12.5px">
+      <span style="font-size:15px">${ICONS[e.event]||'•'}</span>
+      <span style="flex:1"><b>${who}</b> ${LABELS[e.event]||e.event} <span style="color:var(--muted)">${what}</span></span>
+      <span style="color:var(--muted);white-space:nowrap">${fd(e.at)}</span>
+    </div>`;
+  }).join('');
+}
+async function createWorker(){
+  const name=document.getElementById('wName').value.trim();
+  const username=document.getElementById('wUsername').value.trim();
+  const pw=document.getElementById('wPw').value.trim();
+  if(!name||!username||!pw){toast('Fill in all fields');return;}
+  try {
+    const r=await fetch('/api/auth?action=admin-create-worker',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({adminToken:ADMIN_TOKEN,name,username,password:pw})
+    });
+    const data=await r.json();
+    if(!r.ok||!data.ok)throw new Error(data.error||'unknown');
+    ['wName','wUsername','wPw'].forEach(id=>document.getElementById(id).value='');
+    await loadWorkers();
+    toast('✅ Worker account created!');
+  } catch(e){toast('Error: '+e.message);}
+}
+async function toggleWorkerActive(id,active,name){
+  try {
+    await dbPatch('workers','id',id,{active});
+    toast(active?`${name} reactivated`:`${name} deactivated`);
+    await loadWorkers();
+  } catch(e){toast('Error: '+e.message);}
+}
+
+let pwResetTarget=null;
+function openResetPwModal(id,name,role){
+  pwResetTarget={id,name,role:role||'reseller'};
+  document.getElementById('pwModalSub').textContent=`Set a new password for ${name}.`;
+  document.getElementById('pwNewValue').value='';
+  document.getElementById('pwForceReset').checked=true;
+  document.getElementById('pwModal').classList.add('open');
+}
+function genRandomPw(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  const arr=new Uint8Array(12);crypto.getRandomValues(arr);
+  document.getElementById('pwNewValue').value=Array.from(arr).map(b=>chars[b%chars.length]).join('');
+}
+async function confirmResetPassword(){
+  if(!pwResetTarget)return;
+  const newPassword=document.getElementById('pwNewValue').value;
+  const forceReset=document.getElementById('pwForceReset').checked;
+  if(newPassword.length<8){toast('Password must be at least 8 characters');return;}
+  try {
+    const r=await fetch('/api/auth?action=admin-set-password',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({adminToken:ADMIN_TOKEN,role:pwResetTarget.role,id:pwResetTarget.id,newPassword,forceReset})
+    });
+    const data=await r.json();
+    if(!r.ok||!data.ok)throw new Error(data.error||'unknown');
+    document.getElementById('pwModal').classList.remove('open');
+    toast(`✅ Password reset for ${pwResetTarget.name}`);
+    pwResetTarget=null;
+  } catch(e){toast('Error: '+(e.message||'unknown'));}
+}
+
+async function createReseller(){
+  const name=document.getElementById('rName').value.trim();
+  const email=document.getElementById('rEmail').value.trim();
+  const pw=document.getElementById('rPw').value.trim();
+  const checks=parseInt(document.getElementById('rChecks').value)||0;
+  if(!name||!email||!pw){toast('Fill in all required fields');return;}
+  try {
+    const isReseller=document.getElementById('rType').value==='reseller';
+    const r=await fetch('/api/auth?action=admin-create',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({adminToken:ADMIN_TOKEN,role:'reseller',name,email,password:pw,checks,is_reseller:isReseller})
+    });
+    const data=await r.json();
+    if(!r.ok||!data.ok)throw new Error(data.error||'unknown');
+    ['rName','rEmail','rPw','rChecks'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==='rChecks'?'0':''});
+    await loadResellers();
+    toast('✅ Reseller account created!');
+  } catch(e){toast('Error: '+e.message);}
+}
+
+async function adjustBalance(){
+  const id=parseInt(document.getElementById('adjReseller').value);
+  const amount=parseInt(document.getElementById('adjAmount').value);
+  if(!id||isNaN(amount)){toast('Select a reseller and enter an amount');return;}
+  const r=ALL_RESELLERS.find(x=>x.id===id);if(!r)return;
+  const newBal=Math.max(0,(r.checks_balance||0)+amount);
+  try{await dbPatch('resellers','id',id,{checks_balance:newBal});await loadResellers();document.getElementById('adjAmount').value='';toast(`Balance updated: ${newBal} checks`);}
+  catch(e){toast('Error: '+e.message);}
+}
+
+function quickAdjust(id,name,bal){
+  const amt=prompt(`Adjust balance for ${name}\nCurrent: ${bal} checks\n\nEnter amount (positive to add, negative to deduct):`);
+  if(amt===null)return;
+  const n=parseInt(amt);if(isNaN(n)){toast('Enter a valid number');return;}
+  const newBal=Math.max(0,bal+n);
+  dbPatch('resellers','id',id,{checks_balance:newBal}).then(()=>{loadResellers();toast(`Balance: ${newBal} checks`);}).catch(e=>toast('Error: '+e.message));
+}
+
+async function suspendReseller(id,name){
+  if(!confirm(`Suspend ${name}? They will not be able to log in.`))return;
+  try{await dbPatch('resellers','id',id,{revoked:true});await loadResellers();toast('Reseller suspended');}catch(e){toast('Error');}
+}
+async function restoreReseller(id){
+  try{await dbPatch('resellers','id',id,{revoked:false});await loadResellers();toast('Reseller restored');}catch(e){toast('Error');}
+}
+
+/* ─── HELPERS ─── */
+function statusPill(st){
+  if(st==='done')return`<span class="pill p-done"><span class="pd"></span>Done</span>`;
+  if(st==='processing')return`<span class="pill p-processing"><span class="pd"></span>Processing</span>`;
+  if(st==='queued')return`<span class="pill p-queued"><span class="pd"></span>Queued</span>`;
+  return`<span class="pill p-pending"><span class="pd"></span>Pending</span>`;
+}
+function cpText(txt){navigator.clipboard?.writeText(txt).then(()=>toast('📋 Copied!')).catch(()=>toast(txt));}
+function fd(iso){if(!iso)return'—';return new Date(iso).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function x(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;');}
+/* Same scramble as dashboard.html/client.html — keeps admin's displayed code
+   consistent with what the client sees, without revealing sequence/volume. */
+function mix32(x){
+  x = Math.imul(x ^ (x>>>16), 0x45d9f3b) >>> 0;
+  x = Math.imul(x ^ (x>>>16), 0x45d9f3b) >>> 0;
+  return (x ^ (x>>>16)) >>> 0;
+}
+function refCode(id){
+  return 'CM-'+mix32(Number(id)).toString(36).toUpperCase().padStart(7,'0');
+}
+let tt;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),4000);}
+
+/* ─── STATUS BANNER ─── */
+async function loadStatus(){
+  try{
+    const rows=await dbGet('settings',{key:'online_status'});
+    const isOnline=rows.length?rows[0].value==='true':true;
+    const mrows=await dbGet('settings',{key:'offline_message'});
+    const offlineMsg=mrows.length?mrows[0].value:'';
+    renderAdminBanner(isOnline,offlineMsg);
+    document.getElementById('sbToggle').checked=isOnline;
+  }catch(e){console.warn('Status load failed',e);}
+}
+function renderAdminBanner(isOnline,offlineMsg){
+  const b=document.getElementById('statusBanner');
+  const m=document.getElementById('sbMsg');
+  b.className='show '+(isOnline?'online':'offline');
+  m.textContent=isOnline?'You are currently online — accepting submissions':('You are currently offline — back at "'+(offlineMsg||'shortly')+'"');
+}
+async function saveSetting(key,value){
+  const rows=await dbGet('settings',{key});
+  if(rows.length){await dbPatch('settings','key',key,{value:String(value)});}
+  else{await dbInsert('settings',{key,value:String(value)});}
+}
+async function toggleStatus(isOnline){
+  try{
+    let offlineMsg='';
+    if(!isOnline){
+      const mrows=await dbGet('settings',{key:'offline_message'});
+      const existing=mrows.length?mrows[0].value:'';
+      const typed=prompt('When will you be back online? Users will see: "We are currently offline. Please wait until we are back at ___." Just type the time/duration (e.g. "6:00 PM" or "2 hours"):',existing||'shortly');
+      if(typed===null){ document.getElementById('sbToggle').checked=true; return; } // cancelled — stay online
+      offlineMsg=typed.trim()||'shortly';
+      await saveSetting('offline_message',offlineMsg);
+    }
+    await saveSetting('online_status',isOnline);
+    await loadStatus();
+    toast(isOnline?'✅ Status set to Online':'Status set to Offline — users will see your message');
+  }catch(e){toast('Failed to update status');}
+}
+</script>
+</body>
+</html>

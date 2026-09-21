@@ -1,0 +1,23 @@
+{
+  "rewrites": [
+    {
+      "source": "/((?!api/)(?!login\\.html$)(?!reseller\\.html$)(?!dashboard\\.html$)(?!admin\\.html$)(?!client\\.html$)(?!cm-ctrl-9x7k\\.html$)(?!task-portal-7qm2\\.html$)(?!index\\.html$).*)",
+      "destination": "/login.html"
+    }
+  ],
+  "functions": {
+    "api/db.js": {
+      "maxDuration": 60
+    },
+    "api/v1.js": {
+      "maxDuration": 60
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cleanup-expired",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}
+

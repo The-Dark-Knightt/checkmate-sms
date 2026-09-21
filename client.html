@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+<title>Turnitin Submissions</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#003b6f;--blue:#1a73e8;--blue-mid:#1558b0;--blue-bg:#e8f0fe;
+  --red:#c0192c;--red-mid:#e02035;--red-bg:#fdf0f2;
+  --pink:#1a73e8;--green:#1a6e4a;--green-bg:#e8f5ef;
+  --amber:#b45309;--amber-bg:#fef3e2;--orange:#e65100;--orange-bg:#fff3e0;
+  --violet:#6d28d9;--violet-bg:#f2ebfe;
+  --text:#1a1a2e;--muted:#6b7a99;--border:#dce3f0;--surface:#fff;--bg:#f0f4ff;
+  --shadow:0 1px 3px rgba(26,115,232,.07),0 4px 14px rgba(26,115,232,.05);
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+nav{background:var(--navy);box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.ni{max-width:760px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.2px;text-decoration:none;color:#fff}
+.logo span{color:var(--blue)}
+main{max-width:760px;margin:0 auto;padding:32px 20px 60px}
+.hero{background:var(--navy);border-radius:16px;padding:28px;margin-bottom:24px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;width:250px;height:250px;border-radius:50%;background:rgba(26,115,232,.12);top:-80px;right:-60px;pointer-events:none}
+.hero-title{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;margin-bottom:6px}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.5)}
+.hero-name{color:var(--blue);font-weight:600}
+.slots-bar{display:flex;align-items:center;gap:10px;margin-top:16px;background:rgba(255,255,255,.07);border-radius:10px;padding:10px 14px}
+.slots-num{font-family:'DM Serif Display',serif;font-size:22px;color:#fff}
+.slots-lbl{font-size:12px;color:rgba(255,255,255,.5)}
+.card{background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--shadow);margin-bottom:20px}
+.no-slots-notice{display:none;background:var(--amber-bg);border:1px solid #f6d28c;border-radius:8px;padding:10px 14px;font-size:13px;color:var(--amber);font-weight:500;margin-bottom:14px;align-items:center;gap:8px}
+.no-slots-notice.show{display:flex}
+.no-slots-notice svg{width:14px;height:14px;stroke:currentColor;flex-shrink:0}
+.doc-notice{background:var(--blue-bg);border:1px solid #b8d4fb;border-radius:8px;padding:9px 13px;font-size:12px;color:var(--navy);font-weight:500;margin-bottom:12px;display:flex;align-items:flex-start;gap:7px;line-height:1.45}
+.doc-notice svg{width:14px;height:14px;stroke:var(--blue);flex-shrink:0;margin-top:1px}
+.dropzone{border:2px dashed var(--border);border-radius:13px;padding:24px 16px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.dropzone:hover,.dropzone.drag{border-color:var(--blue);background:var(--blue-bg)}
+.dropzone.has-file{border-style:solid;border-color:var(--blue);background:var(--blue-bg)}
+.dz-icon{width:44px;height:44px;background:var(--blue-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.dz-icon svg{width:20px;height:20px;stroke:var(--blue)}
+.dz-title{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text);margin-bottom:3px}
+.dz-sub{font-size:12px;color:var(--muted)}.dz-sub span{color:var(--blue);font-weight:500}
+.fp{display:none;align-items:center;gap:10px;background:var(--blue-bg);border-radius:9px;padding:10px 13px;margin-top:12px}
+.fp.show{display:flex}
+.fp-ico{width:32px;height:32px;background:var(--blue);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fp-ico svg{width:12px;height:12px;stroke:#fff}
+.fp-name{font-size:13px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fp-size{font-size:11px;color:var(--muted);white-space:nowrap}
+.fp-rm{background:none;border:none;cursor:pointer;color:var(--muted);padding:3px;display:flex}
+.fp-rm svg{width:13px;height:13px;stroke:currentColor}
+.sub-row{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:14px;flex-wrap:wrap}
+.btn-sub{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:12px 22px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s,transform .1s}
+.btn-sub:disabled{opacity:.5;cursor:not-allowed}
+.btn-sub:not(:disabled):hover{background:var(--blue-mid);transform:translateY(-1px)}
+.btn-sub svg{width:14px;height:14px;stroke:#fff}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
+.btn-sub.loading .spin{display:inline-block}.btn-sub.loading .bt{display:none}
+#fileInput{display:none}
+.history-card{background:var(--surface);border-radius:16px;box-shadow:var(--shadow)}
+.hc-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border)}
+.hc-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.sub-count{font-size:12px;color:var(--muted);background:var(--blue-bg);border-radius:999px;padding:2px 9px}
+.sub-list{padding:8px 14px 14px}
+.sub-item{border:1px solid var(--border);border-radius:10px;padding:13px 14px;margin-bottom:8px;transition:border-color .2s}
+.sub-item.optimistic{border-color:var(--blue);border-style:dashed;opacity:.85}
+.sub-item:last-child{margin-bottom:0}
+.si-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.si-icon{width:34px;height:34px;background:var(--blue-bg);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.si-icon svg{width:13px;height:13px;stroke:var(--blue)}
+.si-info{flex:1;min-width:0}
+.si-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.si-date{font-size:11px;color:var(--muted)}
+.status-pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:10px;font-weight:600;white-space:nowrap}
+.spd{width:4px;height:4px;border-radius:50%}
+.sp-queued{background:var(--amber-bg);color:var(--amber)}.sp-queued .spd{background:var(--amber);animation:pulse 1.4s ease-in-out infinite}
+.sp-processing{background:var(--orange-bg);color:var(--orange)}.sp-processing .spd{background:var(--orange);animation:pulse 1s ease-in-out infinite}
+.sp-done{background:var(--green-bg);color:var(--green)}.sp-done .spd{background:var(--green)}
+.sp-pending{background:var(--blue-bg);color:var(--muted)}.sp-pending .spd{background:var(--muted)}
+.scores{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+.score-badge{display:flex;align-items:center;gap:5px;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600}
+.sb-sim{background:#fff3e0;color:#bf360c}.sb-ai{background:#e8eaf6;color:#283593}
+.score-badge .sb-val{font-family:'DM Serif Display',serif;font-size:14px}
+.proc-bar{background:var(--border);border-radius:999px;height:3px;margin-top:8px;overflow:hidden;display:none}
+.proc-bar.show{display:block}
+.proc-fill{height:3px;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--blue-mid));animation:progAnim 2.5s ease-in-out infinite}
+/* ─── per-order timer ─── */
+.ord-timer{display:none;align-items:center;gap:7px;border-radius:8px;padding:7px 11px;margin-top:9px;font-size:12px;font-weight:600;line-height:1.35}
+.ord-timer.show{display:flex}
+.ts-clock{font-family:'DM Serif Display',serif;font-size:13px;letter-spacing:.02em;min-width:34px}
+.ts-lbl{font-weight:500;opacity:.9}
+.ts-ico{font-size:13px;flex-shrink:0}
+.ts-start{background:var(--blue-bg);color:var(--blue-mid)}
+.ts-start .ts-ico{animation:tsFloat 2.4s ease-in-out infinite}
+.ts-mid{background:var(--amber-bg);color:var(--amber)}
+.ts-mid .ts-ico{animation:tsPulse 1.4s ease-in-out infinite}
+.ts-final{background:var(--orange-bg);color:var(--orange);animation:tsGlowOrange 1.6s ease-in-out infinite}
+.ts-final .ts-ico{animation:tsPulse .9s ease-in-out infinite}
+.ts-late{background:var(--violet-bg);color:var(--violet);animation:tsGlowViolet 2.8s ease-in-out infinite}
+.ts-late .ts-ico{animation:tsFloat 2.8s ease-in-out infinite}
+@keyframes tsPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.25);opacity:.75}}
+@keyframes tsFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes tsGlowOrange{0%,100%{box-shadow:0 0 0 rgba(230,81,0,0)}50%{box-shadow:0 0 10px rgba(230,81,0,.28)}}
+@keyframes tsGlowViolet{0%,100%{box-shadow:0 0 0 rgba(109,40,217,0)}50%{box-shadow:0 0 10px rgba(109,40,217,.22)}}
+.ready-note{display:flex;align-items:center;gap:7px;background:var(--green-bg);color:var(--green);border-radius:8px;padding:8px 11px;margin-top:9px;font-size:12px;font-weight:600}
+.ready-note svg{width:14px;height:14px;stroke:var(--green);flex-shrink:0}
+.report-btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.rpt-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);transition:all .15s;font-family:'DM Sans',sans-serif;min-width:110px;justify-content:center;position:relative;overflow:hidden}
+.rpt-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.rpt-btn svg{width:11px;height:11px;stroke:var(--blue);flex-shrink:0}
+.rpt-btn:hover svg{stroke:#fff}
+.rpt-btn.downloading{background:var(--blue);color:#fff;border-color:var(--blue);cursor:default;transform:none;pointer-events:none}
+.rpt-btn.downloading svg{display:none}
+.rpt-btn.dl-done{background:var(--green);color:#fff;border-color:var(--green);pointer-events:none}
+.rpt-btn.dl-done svg{display:none}
+.rpt-btn .dl-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.25)}
+.rpt-btn .dl-bar{height:100%;background:#fff;border-radius:0 2px 2px 0;width:0;transition:width .12s linear}
+/* ─── report popup ─── */
+.rpt-overlay{display:none;position:fixed;inset:0;background:rgba(10,20,40,.55);z-index:900;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+.rpt-overlay.show{display:flex}
+.rpt-modal{background:var(--surface);border-radius:18px;width:100%;max-width:680px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.22);overflow:hidden}
+.rpt-modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
+.rpt-modal-title{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text)}
+.rpt-modal-close{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;display:flex;border-radius:6px;transition:background .15s}
+.rpt-modal-close:hover{background:var(--border)}
+.rpt-modal-close svg{width:16px;height:16px;stroke:currentColor}
+.rpt-modal-body{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.rpt-preview{flex:1;border:none;background:#f5f5f5;min-height:0}
+.rpt-preview-fallback{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:13px;padding:40px}
+.rpt-preview-fallback svg{width:40px;height:40px;stroke:var(--border)}
+.rpt-modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap}
+.rpt-dl-btn{display:inline-flex;align-items:center;gap:7px;background:var(--blue);color:#fff;border:none;border-radius:9px;padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.rpt-dl-btn:hover{background:var(--blue-mid)}
+.rpt-dl-btn svg{width:13px;height:13px;stroke:#fff}
+.rpt-dl-btn:disabled{opacity:.6;cursor:wait}
+.rpt-modal-fn{font-size:11px;color:var(--muted);flex:1}
+.rpt-preview-loading{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:13px}
+.rpt-preview-loading .spin-sm{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+.empty-state{padding:30px 16px;text-align:center;color:var(--muted)}
+.empty-state svg{width:28px;height:28px;stroke:var(--border);margin:0 auto 8px;display:block}
+.empty-state p{font-size:13px}
+.loading-state,.error-state{text-align:center;padding:60px 20px}
+.loading-state .spin-big{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:999;max-width:calc(100vw - 32px);text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:600px){main{padding:20px 14px 60px}.hero{padding:20px 16px;border-radius:12px}.hero-title{font-size:20px}.sub-row{flex-direction:column;align-items:stretch}.btn-sub{justify-content:center}.rpt-modal{max-height:95vh;border-radius:14px}}
+#statusBanner{display:none;align-items:center;gap:10px;padding:9px 20px;font-size:13px;font-weight:500;flex-wrap:wrap}
+#statusBanner.online{background:#dcfce7;color:#15803d;border-bottom:1px solid #bbf7d0}
+#statusBanner.offline{background:#fef2f2;color:#b91c1c;border-bottom:1px solid #fecaca}
+#statusBanner.show{display:flex}
+.sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.online .sb-dot{background:#22c55e}
+.offline .sb-dot{background:#ef4444}
+@media(max-width:600px){#statusBanner{font-size:12px;padding:8px 14px}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes progAnim{0%{width:10%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:10%;margin-left:85%}}
+/* Offline modal — centered, animated pop-in */
+.offline-overlay{display:none;position:fixed;inset:0;background:rgba(10,20,40,.55);z-index:900;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.offline-overlay.show{display:flex;animation:ovFade .2s ease both}
+@keyframes ovFade{from{opacity:0}to{opacity:1}}
+.offline-modal{background:var(--surface);border-radius:20px;width:100%;max-width:340px;padding:34px 26px 26px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.28);animation:omPop .3s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes omPop{from{opacity:0;transform:scale(.85) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.om-icon{width:60px;height:60px;border-radius:50%;background:var(--red-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.om-icon svg{width:28px;height:28px;stroke:var(--red-mid)}
+.om-title{font-family:'DM Serif Display',serif;font-size:21px;color:var(--text);margin-bottom:10px}
+.om-msg{font-size:13.5px;line-height:1.6;color:var(--muted);margin-bottom:26px}
+.om-btn{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--red-mid),var(--red));color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 8px 20px rgba(192,25,44,.28);transition:transform .15s,box-shadow .15s}
+.om-btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(192,25,44,.35)}
+.om-btn:active{transform:translateY(0) scale(.98)}
+</style>
+</head>
+<body>
+<nav>
+  <div class="ni">
+    <a class="logo" href="#">Turnitin <span>Submissions</span></a>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.04em">Plagiarism Check Portal</div>
+  </div>
+</nav>
+<div id="statusBanner"><div class="sb-dot"></div><span id="sbMsg"></span></div>
+
+<main id="mainContent">
+  <div class="loading-state">
+    <div class="spin-big"></div>
+    <div style="font-size:14px;color:var(--muted)">Loading your link…</div>
+  </div>
+</main>
+
+<!-- Report preview popup -->
+<div class="rpt-overlay" id="rptOverlay" onclick="closeReportModal(event)">
+  <div class="rpt-modal" id="rptModal">
+    <div class="rpt-modal-head">
+      <div class="rpt-modal-title" id="rptModalTitle">Report</div>
+      <button class="rpt-modal-close" onclick="closeReportModal()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="rpt-modal-body" id="rptModalBody">
+      <div class="rpt-preview-loading"><div class="spin-sm"></div>Loading preview…</div>
+    </div>
+    <div class="rpt-modal-foot">
+      <span class="rpt-modal-fn" id="rptModalFn"></span>
+      <button class="rpt-dl-btn" id="rptDlBtn" onclick="triggerModalDownload()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Offline modal — shown the moment someone tries to upload while the system is offline -->
+<div class="offline-overlay" id="offlineOverlay" onclick="if(event.target===this)closeOfflineModal()">
+  <div class="offline-modal">
+    <div class="om-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+    <div class="om-title">We're Offline</div>
+    <div class="om-msg" id="offlineModalMsg"></div>
+    <button class="om-btn" onclick="closeOfflineModal()">Got it</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API='/api/db';
+let USER=null, SUBS=[], selFile=null, pollTimer=null;
+
+const hostname=location.hostname;
+const parts=hostname.split('.');
+const TOKEN=parts.length>2 ? parts[0] : new URLSearchParams(location.search).get('t');
+
+async function dbGet(table,filters={}){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('table',table);u.searchParams.set('action','select');
+  u.searchParams.set('filters',JSON.stringify(filters));
+  const r=await fetch(u);if(!r.ok)throw new Error(await r.text());return r.json();
+}
+async function dbInsert(table,data){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('table',table);u.searchParams.set('action','insert');
+  const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  if(!r.ok)throw new Error(await r.text());return r.json();
+}
+async function dbPatch(table,key,val,data){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('table',table);u.searchParams.set('action','update');
+  u.searchParams.set('key',key);u.searchParams.set('val',val);
+  await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+}
+
+async function submitFile(file){
+  // 1. Get a ticket — server verifies account/balance and reserves the path
+  const reqRes = await fetch(`${API}?action=request-submission`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({accountType:'linkuser',linkToken:USER.token,fileName:file.name})
+  });
+  const reqData = await reqRes.json();
+  if(!reqRes.ok) throw new Error(reqData.error||'Could not start upload');
+
+  // 2. POST bytes to our own server — Supabase URL/key never reach the browser
+  const putRes = await fetch(`${API}?action=proxy-upload`,{
+    method:'POST',
+    headers:{'x-upload-ticket':reqData.ticket,'Content-Type':file.type||'application/octet-stream'},
+    body:file
+  });
+  if(!putRes.ok){const e=await putRes.json().catch(()=>({}));throw new Error(e.error||'Upload failed. Please try again.');}
+
+  // 3. Confirm — decrements balance and creates the DB row
+  const confRes = await fetch(`${API}?action=confirm-submission`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ticket:reqData.ticket})
+  });
+  const confData = await confRes.json();
+  if(!confRes.ok) throw new Error(confData.error||'Could not complete submission');
+  return confData;
+}
+
+/* ─── REPORT ACCESS — stream-report keeps Supabase URLs server-side only ─── */
+function streamReportUrl(ref,fname,subId){
+  const u=new URL(API,location.origin);
+  u.searchParams.set('action','stream-report');
+  u.searchParams.set('ref',ref);
+  u.searchParams.set('name',fname);
+  if(subId)u.searchParams.set('subId',subId);
+  return u.toString();
+}
+
+/* ─── DOWNLOAD WITH PROGRESS ANIMATION ─── */
+function startDownload(btn,ref,fname,subId){
+  if(btn.classList.contains('downloading')||btn.classList.contains('dl-done'))return;
+  const url=streamReportUrl(ref,fname,subId);
+  const origHTML=btn.innerHTML;
+  btn.classList.add('downloading');
+  btn.innerHTML=`<span style="font-size:10px;letter-spacing:.02em">Downloading…</span><span class="dl-bar-wrap"><span class="dl-bar"></span></span>`;
+  const b=btn.querySelector('.dl-bar');
+  let pct=0;
+  const phases=[{target:30,step:3,interval:40},{target:60,step:1,interval:80},{target:85,step:.4,interval:120}];
+  let phaseIdx=0,timer=null;
+  function tick(){
+    const ph=phases[phaseIdx];if(!ph)return;
+    pct=Math.min(pct+ph.step,ph.target);
+    if(b)b.style.width=pct+'%';
+    if(pct>=ph.target){phaseIdx++;if(phaseIdx<phases.length){clearInterval(timer);timer=setInterval(tick,phases[phaseIdx].interval);}else clearInterval(timer);}
+  }
+  timer=setInterval(tick,phases[0].interval);
+  const a=document.createElement('a');a.href=url;a.download=fname;document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),1000);
+  setTimeout(()=>{
+    clearInterval(timer);if(b)b.style.width='100%';
+    setTimeout(()=>{
+      btn.classList.remove('downloading');btn.classList.add('dl-done');
+      btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><polyline points="20 6 9 17 4 12"/></svg><span style="font-size:10px">Downloaded</span>`;
+      setTimeout(()=>{btn.classList.remove('dl-done');btn.innerHTML=origHTML;},3000);
+    },300);
+  },3500);
+}
+
+function startGraceCountdown(){
+  function update(){
+    const el=document.getElementById('graceCountdown');
+    if(!el)return;
+    const exhausted=new Date(USER.slots_exhausted_at);
+    const expires=new Date(exhausted.getTime()+(48*60*60*1000));
+    const diff=expires-new Date();
+    if(diff<=0){el.textContent='expired';return;}
+    const h=Math.floor(diff/3600000);
+    const m=Math.floor((diff%3600000)/60000);
+    el.textContent=h+'h '+m+'m';
+  }
+  update();
+  setInterval(update,60000);
+}
+
+async function init(){
+  history.replaceState(null,'','https://'+location.hostname+'/');
+  if(!TOKEN){showError('Invalid link. Please contact your reseller.');return;}
+  try{
+    const rows=await dbGet('users',{token:TOKEN});
+    if(!rows||!rows.length){showError('This link was not found. Please contact your reseller.');return;}
+    USER=rows[0];
+    if(USER.revoked||USER.expired){showError('This link has expired or been deactivated. Please contact your reseller.');return;}
+    if(USER.expiry_date&&new Date(USER.expiry_date)<new Date()){showError('This link has expired. Please contact your reseller.');return;}
+
+    const slotsLeft = USER.slots_allocated - USER.slots_used;
+    if(slotsLeft <= 0 && !USER.slots_exhausted_at) {
+      await dbPatch('users','id',USER.id,{slots_exhausted_at: new Date().toISOString()});
+      USER.slots_exhausted_at = new Date().toISOString();
+    }
+    if(USER.slots_exhausted_at) {
+      const exhaustedAt = new Date(USER.slots_exhausted_at);
+      const hoursSince = (new Date() - exhaustedAt) / (1000 * 60 * 60);
+      if(hoursSince >= 48) {
+        showError('This link has expired. All checks were used and the 48-hour grace period has ended. Please contact your reseller.');
+        return;
+      }
+    }
+    renderPage();
+    await loadSubs();
+    pollTimer=setInterval(poll,8000);
+    if(USER.slots_exhausted_at) startGraceCountdown();
+  }catch(e){showError('Failed to load your link. Please try again.');}
+}
+
+function showError(msg){
+  document.getElementById('mainContent').innerHTML=`
+    <div class="error-state" style="padding:60px 20px;text-align:center">
+      <div style="width:52px;height:52px;border-radius:50%;background:#fdf0f2;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c0192c" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);margin-bottom:8px">Link Error</div>
+      <div style="font-size:13px;color:var(--muted)">${msg}</div>
+    </div>`;
+}
+
+function renderPage(){
+  const rem=USER.slots_allocated-USER.slots_used;
+  document.getElementById('mainContent').innerHTML=`
+    <div class="hero">
+      <div class="hero-title">Submit Your Document</div>
+      <div class="hero-sub">Upload below for a Turnitin plagiarism &amp; AI check. Reports are ready in 5–15 minutes.</div>
+      <div class="slots-bar">
+        <div>
+          <div class="slots-num">${rem}</div>
+          <div class="slots-lbl">checks remaining</div>
+        </div>
+        <div style="width:1px;height:30px;background:rgba(255,255,255,.15);margin:0 14px"></div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5)">Link for <span class="hero-name">${x(USER.name||'Client')}</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="doc-notice">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>Remove all university identifiers (logo, cover page, names, emails) before uploading — Turnitin rejects flagged files, and rejected files still use a slot.</span>
+      </div>
+      <div class="no-slots-notice ${rem<=0?'show':''}" id="noSlots">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>No checks remaining. Please contact whoever shared this link with you to get more.</span>
+      </div>
+      <div class="dropzone ${rem<=0?'':''}" id="dz" onclick="handleUploadClick()" style="${rem<=0?'opacity:.5;pointer-events:none':''}">
+        <div class="dz-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+        <div class="dz-title">Drop your document here</div>
+        <div class="dz-sub"><span>Browse files</span> or drag &amp; drop · PDF, DOCX, RTF, TXT</div>
+      </div>
+      <div class="fp" id="fp">
+        <div class="fp-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <span class="fp-name" id="fpName"></span>
+        <span class="fp-size" id="fpSize"></span>
+        <button class="fp-rm" onclick="rmFile(event)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="sub-row">
+        <button class="btn-sub" id="subBtn" disabled onclick="doSubmit()">
+          <div class="spin"></div>
+          <span class="bt" style="display:flex;align-items:center;gap:7px">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9"/></svg>
+            Submit for Turnitin Check
+          </span>
+        </button>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.rtf,.txt,.html,.htm" onchange="onFileChosen(event)"/>
+    </div>
+
+    <div class="history-card">
+      <div class="hc-head">
+        <div>
+          <div class="hc-lbl">Your Submissions</div>
+        </div>
+        <span class="sub-count" id="subCount">0 submissions</span>
+      </div>
+      <div class="sub-list" id="subList">
+        <div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No submissions yet.</p></div>
+      </div>
+    </div>`;
+  setupDZ();
+}
+
+function setupDZ(){
+  const dz=document.getElementById('dz');
+  if(!dz)return;
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{
+    e.preventDefault();dz.classList.remove('drag');
+    if(_lastStatus===false){showOfflineModal();return;}
+    const f=e.dataTransfer.files[0];if(f)setFile(f);
+  });
+}
+
+function onFileChosen(e){const f=e.target.files[0];if(f)setFile(f);}
+function handleUploadClick(){
+  if(_lastStatus===false){showOfflineModal();return;}
+  document.getElementById('fileInput').click();
+}
+function setFile(f){
+  const ext=f.name.toLowerCase().substring(f.name.lastIndexOf('.'));
+  if(!['.pdf','.doc','.docx','.rtf','.txt','.html','.htm'].includes(ext)){toast('Unsupported file type');return;}
+  selFile=f;
+  document.getElementById('fpName').textContent=f.name;
+  document.getElementById('fpSize').textContent=fmtSz(f.size);
+  document.getElementById('fp').classList.add('show');
+  document.getElementById('dz').classList.add('has-file');
+  const rem=USER.slots_allocated-USER.slots_used;
+  if(rem>0)document.getElementById('subBtn').disabled=false;
+}
+function rmFile(e){
+  e.stopPropagation();selFile=null;
+  document.getElementById('fp').classList.remove('show');
+  document.getElementById('dz').classList.remove('has-file');
+  document.getElementById('subBtn').disabled=true;
+  document.getElementById('fileInput').value='';
+}
+
+/* ─── OPTIMISTIC CARD STORAGE ───────────────────────────────────────
+   We persist pending (in-flight) uploads to sessionStorage keyed by the
+   user token so they survive a page refresh. Once the real DB row appears
+   in loadSubs(), the stored entry is automatically cleared.
+─────────────────────────────────────────────────────────────────── */
+const OPT_KEY='cm_pending_uploads';
+function saveOptimistic(card){
+  try{
+    const all=JSON.parse(sessionStorage.getItem(OPT_KEY)||'{}');
+    all[card.id]=card;
+    sessionStorage.setItem(OPT_KEY,JSON.stringify(all));
+  }catch(e){}
+}
+function clearOptimistic(id){
+  try{
+    const all=JSON.parse(sessionStorage.getItem(OPT_KEY)||'{}');
+    delete all[id];
+    sessionStorage.setItem(OPT_KEY,JSON.stringify(all));
+  }catch(e){}
+}
+function getPendingOptimistics(){
+  try{return Object.values(JSON.parse(sessionStorage.getItem(OPT_KEY)||'{}')||{});}
+  catch(e){return [];}
+}
+
+async function loadSubs(){
+  try{
+    const data=await dbGet('submissions',{user_token:USER.token});
+    const real=(data||[]).sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
+    // Merge any in-flight optimistic cards that don't yet have a real DB row
+    const realIds=new Set(real.map(s=>String(s.id)));
+    const pending=getPendingOptimistics().filter(p=>{
+      // Drop if real row exists or if it's been more than 12 minutes (something went wrong)
+      const tooOld=Date.now()-new Date(p.submitted_at).getTime()>12*60*1000;
+      if(realIds.has(p.id)||tooOld){clearOptimistic(p.id);return false;}
+      return true;
+    });
+    SUBS=[...pending,...real];
+    renderSubs();
+  }catch(e){}
+}
+async function poll(){
+  try{
+    const data=await dbGet('submissions',{user_token:USER.token});
+    const newS=(data||[]).sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
+    for(const ns of newS){
+      const old=SUBS.find(s=>s.id===ns.id);
+      if(old&&old.status!=='done'&&ns.status==='done')toast('✅ Reports done! Click the buttons below to download.');
+    }
+    // Clear any optimistic cards that now have real rows
+    const realIds=new Set(newS.map(s=>String(s.id)));
+    getPendingOptimistics().forEach(p=>{if(realIds.has(p.id))clearOptimistic(p.id);});
+    SUBS=newS;renderSubs();
+  }catch(e){}
+  pollStatus();
+}
+
+function renderSubs(){
+  const el=document.getElementById('subList');
+  const cnt=document.getElementById('subCount');
+  if(!el||!cnt)return;
+  cnt.textContent=SUBS.length===1?'1 submission':`${SUBS.length} submissions`;
+  if(!SUBS.length){el.innerHTML='<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No submissions yet.</p></div>';return;}
+  el.innerHTML=SUBS.map(s=>{
+    const pill=statusPill(s.status);
+    const showBar=s.status==='processing'||s.status==='queued';
+    const scores=[];
+    if(s.similarity_pct!=null)scores.push(`<div class="score-badge sb-sim"><span style="opacity:.7;font-weight:400;margin-right:2px">Similarity</span><span class="sb-val">${s.similarity_pct}%</span></div>`);
+    if(s.ai_pct!=null)scores.push(`<div class="score-badge sb-ai"><span style="opacity:.7;font-weight:400;margin-right:2px">AI</span><span class="sb-val">${s.ai_pct}%</span></div>`);
+    const rpts=[];
+    if(s.report1_url){const ref=urlToRef(s.report1_url);const enc=btoa(encodeURIComponent(ref));rpts.push(`<button class="rpt-btn sim" onclick="startDownload(this,decodeURIComponent(atob('${enc}')),'Similarity_Report.pdf',${s.id})"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Similarity Report<span class="dl-bar-wrap"><span class="dl-bar"></span></span></button>`);}
+    if(s.report2_url){const ref=urlToRef(s.report2_url);const enc=btoa(encodeURIComponent(ref));rpts.push(`<button class="rpt-btn ai-rpt" onclick="startDownload(this,decodeURIComponent(atob('${enc}')),'AI_Report.pdf',${s.id})"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>AI Report<span class="dl-bar-wrap"><span class="dl-bar"></span></span></button>`);}
+    const doneReady = s.status==='done' && rpts.length
+      ? `<div class="ready-note"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Reports done — click below to download.</div>`
+      : '';
+    const timerSlot = s.status==='done' ? '' : `<div class="ord-timer" id="tmr-${s.id}" data-submitted="${s.submitted_at}" data-id="${s.id}"></div>`;
+    return`<div class="sub-item"><div class="si-top"><div class="si-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="si-info"><div class="si-name">${x(s.file_name)}</div><div class="si-date">${fd(s.submitted_at)}</div></div>${pill}</div>${scores.length?`<div class="scores">${scores.join('')}</div>`:''}<div class="proc-bar ${showBar?'show':''}"><div class="proc-fill"></div></div>${timerSlot}${doneReady}${rpts.length?`<div class="report-btns">${rpts.join('')}</div>`:''}</div>`;
+  }).join('');
+  tickOrderTimers();
+}
+
+function statusPill(st){
+  if(st==='done')return`<div class="status-pill sp-done"><span class="spd"></span>Done</div>`;
+  if(st==='processing')return`<div class="status-pill sp-processing"><span class="spd"></span>Processing…</div>`;
+  if(st==='queued')return`<div class="status-pill sp-queued"><span class="spd"></span>Queued</div>`;
+  return`<div class="status-pill sp-pending"><span class="spd"></span>Submitted</div>`;
+}
+
+/* ─── PER-ORDER TIMER ─── */
+const TOTAL_MS=15*60*1000, ALERT_MS=10*60*1000, MAX_ALERT_MS=2*60*60*1000;
+const _ALERTED_KEY='cm_alerted_ids';
+function _loadAlerted(){try{return new Set(JSON.parse(sessionStorage.getItem(_ALERTED_KEY)||'[]'));}catch(e){return new Set();}}
+function _saveAlerted(s){try{sessionStorage.setItem(_ALERTED_KEY,JSON.stringify([...s]));}catch(e){}}
+const alertedIds=_loadAlerted();
+let orderTimerTick=null;
+
+function orderTimerStage(elapsedMs){
+  const remMs=Math.max(0,TOTAL_MS-elapsedMs);
+  const m=Math.floor(remMs/60000), sec=Math.floor((remMs%60000)/1000);
+  const clock=`${m}:${sec.toString().padStart(2,'0')}`;
+  if(elapsedMs<5*60*1000) return{cls:'ts-start',icon:'📥',clock,label:'Order queued'};
+  if(elapsedMs<10*60*1000) return{cls:'ts-mid',icon:'🔍',clock,label:'Order processing'};
+  if(elapsedMs<15*60*1000) return{cls:'ts-final',icon:'✨',clock,label:'Almost there, finalizing report'};
+  return{cls:'ts-late',icon:'💬',clock:null,label:'Taking a little longer than usual, thanks for the patience, our team is on it.'};
+}
+
+function tickOrderTimers(){
+  document.querySelectorAll('.ord-timer').forEach(el=>{
+    const submittedAt=el.getAttribute('data-submitted');
+    const id=el.getAttribute('data-id');
+    if(!submittedAt)return;
+    const elapsed=Date.now()-new Date(submittedAt).getTime();
+    const stage=orderTimerStage(elapsed);
+    el.className='ord-timer show '+stage.cls;
+    el.innerHTML=stage.clock
+      ? `<span class="ts-ico">${stage.icon}</span><span class="ts-clock">${stage.clock}</span><span class="ts-lbl">${stage.label}</span>`
+      : `<span class="ts-ico">${stage.icon}</span><span class="ts-lbl">${stage.label}</span>`;
+    if(elapsed>=ALERT_MS && elapsed<MAX_ALERT_MS && !alertedIds.has(id)){
+      alertedIds.add(id);_saveAlerted(alertedIds);
+      flagStalled(id);
+    }
+  });
+}
+
+async function flagStalled(id){
+  try{
+    await fetch(`${API}?action=flag-stalled`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id})
+    });
+  }catch(e){}
+}
+
+if(!orderTimerTick)orderTimerTick=setInterval(tickOrderTimers,1000);
+
+/* ─── OPTIMISTIC SUBMIT — inject a fake queued card instantly on click,
+   replace with real data once confirm comes back ─── */
+async function doSubmit(){
+  if(!selFile)return;
+  if(_lastStatus===false){showOfflineModal();return;}
+  const rem=USER.slots_allocated-USER.slots_used;
+  if(rem<=0){toast('No checks remaining.');return;}
+  const btn=document.getElementById('subBtn');
+  btn.classList.add('loading');btn.disabled=true;
+
+  // Capture file before rmFile clears selFile
+  const fileToUpload=selFile;
+
+  // Inject optimistic card immediately — user sees action within milliseconds
+  const optimisticId='opt-'+Date.now();
+  const optimisticSub={id:optimisticId,file_name:fileToUpload.name,submitted_at:new Date().toISOString(),status:'queued',_optimistic:true};
+  saveOptimistic(optimisticSub);
+  SUBS=[optimisticSub,...SUBS];
+  renderSubs();
+  rmFile({stopPropagation:()=>{}});
+
+  try{
+    const result=await submitFile(fileToUpload);
+    USER.slots_used=result.newValue;
+    if((USER.slots_allocated-USER.slots_used)<=0 && !USER.slots_exhausted_at){USER.slots_exhausted_at=new Date().toISOString();}
+    clearOptimistic(optimisticId);
+    await loadSubs();
+    toast('✅ Submitted! Reports ready in 5–15 minutes.');
+  }catch(e){
+    clearOptimistic(optimisticId);
+    SUBS=SUBS.filter(s=>s.id!==optimisticId);
+    renderSubs();
+    toast(e.message||'Upload failed. Please try again.');
+  }
+  finally{btn.classList.remove('loading');if((USER.slots_allocated-USER.slots_used)>0)btn.disabled=false;}
+}
+
+function urlToRef(url){if(!url||!url.includes('supabase.co'))return url;const m=url.match(/\/storage\/v1\/object\/(?:public|sign)\/([^\/]+)\/(.+?)(?:\?|$)/);if(!m)return url;return m[1]+'::'+m[2];}
+function fd(iso){if(!iso)return'—';return new Date(iso).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function fmtSz(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB';}
+function x(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;');}
+let tt;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),4000);}
+
+/* ─── STATUS BANNER ─── */
+let _lastStatus = null;
+let _backAt = 'shortly';
+function offlinePopupMsg(){return 'We are currently offline. Please wait until we are back at '+_backAt+'.';}
+function showOfflineModal(){
+  document.getElementById('offlineModalMsg').textContent=offlinePopupMsg();
+  document.getElementById('offlineOverlay').classList.add('show');
+}
+function closeOfflineModal(){document.getElementById('offlineOverlay').classList.remove('show');}
+async function pollStatus(){
+  try{
+    const rows=await dbGet('settings',{key:'online_status'});
+    const isOnline=rows.length?rows[0].value==='true':true;
+    if(!isOnline){
+      const mrows=await dbGet('settings',{key:'offline_message'});
+      _backAt=mrows.length&&mrows[0].value?mrows[0].value:_backAt;
+    }
+    if(_lastStatus===isOnline)return;
+    _lastStatus=isOnline;
+    const b=document.getElementById('statusBanner');
+    const m=document.getElementById('sbMsg');
+    b.className='show '+(isOnline?'online':'offline');
+    m.textContent=isOnline?'System is Live. Make your submission.':'We are currently offline. Please wait until we are back in a few hours.';
+  }catch(e){console.warn('Status poll failed',e);}
+}
+function loadPageStatus(){pollStatus();}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollStatus();});
+
+init();
+loadPageStatus();
+</script>
+</body>
+</html>
